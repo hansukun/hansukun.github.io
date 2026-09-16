@@ -178,12 +178,31 @@ def check_screens(_: str) -> list[str]:
     return out
 
 
+def check_hero(name: str) -> list[str]:
+    page = load(name)
+    if page is None:
+        return []
+    out = []
+    if "Your monthly bills, settled." not in page.text:
+        out.append("index.html: hero headline missing")
+    if "Coming soon to Google Play" not in page.text:
+        out.append("index.html: coming-soon caption missing")
+    if "assets/google-play-badge.svg" not in page.srcs:
+        out.append("index.html: badge image missing")
+    if not any("screens/month.webp" in s for s in page.srcs):
+        out.append("index.html: hero phone must show screens/month.webp")
+    if re.search(r'href="https?://play\.google\.com', page.html):
+        out.append("index.html: badge must not link to Play yet")
+    return out
+
+
 CHECKS = [
     ("files", check_files_exist, [None]),
     ("basics", check_page_basics, PAGES),
     ("tokens", check_tokens, PAGES),
     ("links", check_links, PAGES),
     ("screens", check_screens, [None]),
+    ("hero", check_hero, ["index.html"]),
 ]
 
 

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60" role="img" aria-label="Coming soon on Google Play">
+  <rect x=".5" y=".5" width="199" height="59" rx="8" fill="#141414" stroke="#3a3a3a"/>
+  <g transform="translate(14 14)">
+    <path d="M2 2 L18 16 L2 30 Z" fill="#8a8a8a"/>
+    <path d="M2 2 L26 16 L18 16 Z" fill="#aaaaaa"/>
+    <path d="M2 30 L26 16 L18 16 Z" fill="#6f6f6f"/>
+  </g>
+  <text x="52" y="24" font-family="JetBrains Mono, ui-monospace, monospace" font-size="10" letter-spacing="1.5" fill="#a3a3a3">COMING SOON ON</text>
+  <text x="52" y="45" font-family="Inter, system-ui, sans-serif" font-size="19" font-weight="600" fill="#e5e5e5">Google Play</text>
+</svg>
