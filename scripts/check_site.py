@@ -196,6 +196,38 @@ def check_hero(name: str) -> list[str]:
     return out
 
 
+FEATURE_TITLES = [
+    "Pools and totals",
+    "Due-date reminders",
+    "Month history and trend",
+    "A template that never rewrites history",
+    "No account, no sync, no cloud",
+    "Backups you control",
+]
+STEP_TITLES = [
+    "Set up your template once",
+    "Tick things off as you pay",
+    "It rolls into next month",
+]
+
+
+def check_features(name: str) -> list[str]:
+    page = load(name)
+    if page is None:
+        return []
+    out = []
+    for i in ("features", "how"):
+        if i not in page.ids:
+            out.append(f"index.html: missing id={i}")
+    for t in FEATURE_TITLES:
+        if t not in page.text:
+            out.append(f"index.html: feature card '{t}' missing")
+    for s in STEP_TITLES:
+        if s not in page.text:
+            out.append(f"index.html: step '{s}' missing")
+    return out
+
+
 CHECKS = [
     ("files", check_files_exist, [None]),
     ("basics", check_page_basics, PAGES),
@@ -203,6 +235,7 @@ CHECKS = [
     ("links", check_links, PAGES),
     ("screens", check_screens, [None]),
     ("hero", check_hero, ["index.html"]),
+    ("features", check_features, ["index.html"]),
 ]
 
 
