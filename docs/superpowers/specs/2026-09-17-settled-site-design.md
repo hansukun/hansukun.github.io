@@ -60,8 +60,8 @@ E:\Hans\Projects\Web App Dev Page\
 6. **Pricing** — two cards. *Free*: the whole app, one small banner and an occasional
    native ad row. *Ad-free*: monthly subscription with a 7-day free trial, price "set on
    Google Play". No paywall copy beyond that.
-7. **Footer** — "Built by Hans", privacy link, contact `mailto:` (placeholder until the
-   user supplies an address), copyright year.
+7. **Footer** — "Built by Hans", privacy link, contact `mailto:deguzmanhans05@gmail.com`,
+   copyright year.
 
 ## Visual system
 
@@ -110,7 +110,7 @@ Same tokens and nav as the brochure. Sections:
 - Purchases — handled by Google Play Billing; the app never sees payment details.
 - Notifications — scheduled locally on the device.
 - Children — not directed at children under 13.
-- Changes and contact — effective date, contact address (placeholder).
+- Changes and contact — effective date, contact address `deguzmanhans05@gmail.com`.
 
 Marked as a draft for the user's review; the page itself carries no "draft" banner.
 
