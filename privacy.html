@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy policy — Settled</title>
+  <meta name="description" content="How Settled handles your data: everything stays on your phone; ads via Google AdMob; optional Google Drive backups.">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #141414;
+      --border: #262626;
+      --text: #f5f5f5;
+      --muted: #a3a3a3;
+      --accent: #22c55e;
+      --overdue: #ef4444;
+      --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+      --radius: 16px;
+      --gutter: 16px;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    a:hover { color: var(--accent); }
+    h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.01em; }
+    p { margin: 0; }
+    code { font-family: var(--mono); font-size: .92em; color: var(--text); }
+
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 var(--gutter); }
+    .mono { font-family: var(--mono); }
+    .muted { color: var(--muted); }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    /* nav */
+    .nav { position: sticky; top: 0; z-index: 10; background: rgba(10,10,10,.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .nav .container { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+    .brand img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-links { display: flex; gap: 22px; font-size: 14px; color: var(--muted); }
+
+    /* sections */
+    .section { padding: 88px 0; border-top: 1px solid var(--border); }
+    .section-head { max-width: 560px; margin-bottom: 40px; }
+    .section-head h2 { font-size: clamp(26px, 3.6vw, 36px); margin-top: 10px; }
+    .section-head p { color: var(--muted); margin-top: 12px; font-size: 17px; }
+
+    /* hero */
+    .hero { padding: 72px 0 96px; position: relative; overflow: hidden; }
+    .hero .container { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; }
+    .hero h1 { font-size: clamp(38px, 6vw, 64px); font-weight: 700; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero .lead { color: var(--muted); font-size: clamp(17px, 2vw, 20px); margin-top: 20px; max-width: 520px; }
+    .hero-cta { margin-top: 32px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+    .hero-cta small { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+    .hero-visual { position: relative; display: flex; justify-content: center; }
+    .glow {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: 420px; height: 420px; border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(34,197,94,.28), transparent 70%);
+      pointer-events: none;
+    }
+
+    /* badge */
+    .btn-badge { display: inline-block; opacity: .55; filter: grayscale(1); cursor: not-allowed; }
+    .btn-badge img { height: 56px; width: auto; }
+
+    /* phone frame */
+    .phone {
+      position: relative;
+      width: clamp(220px, 28vw, 320px);
+      aspect-ratio: 720 / 1180;
+      padding: 8px;
+      border-radius: 36px;
+      background: #1c1c1c;
+      box-shadow: 0 0 0 1px #2e2e2e, 0 30px 80px rgba(0,0,0,.6);
+      flex-shrink: 0;
+    }
+    .phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 28px; background: #000; }
+
+    /* grids & cards */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; }
+    .card h3 { font-size: 18px; margin-top: 14px; }
+    .card p { color: var(--muted); margin-top: 8px; font-size: 15px; }
+    .step-num { font-family: var(--mono); color: var(--accent); font-size: 13px; }
+    .icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(34,197,94,.12); display: grid; place-items: center; color: var(--accent); }
+    .icon svg { width: 20px; height: 20px; }
+
+    /* screenshot strip */
+    .strip { display: flex; gap: 28px; overflow-x: auto; padding: 8px var(--gutter) 24px; margin: 0 calc(-1 * var(--gutter)); scroll-snap-type: x mandatory; scrollbar-width: thin; }
+    .strip figure { margin: 0; scroll-snap-align: start; text-align: center; }
+    .strip figcaption { margin-top: 14px; font-size: 14px; color: var(--muted); }
+
+    /* pricing */
+    .price { display: flex; flex-direction: column; gap: 14px; }
+    .price .amount { font-family: var(--mono); font-size: 30px; font-weight: 600; }
+    .price .amount small { font-size: 14px; color: var(--muted); font-weight: 400; }
+    .price ul { margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: 15px; display: grid; gap: 8px; }
+    .price li::before { content: "✓ "; color: var(--accent); font-family: var(--mono); }
+    .price--accent { border-color: rgba(34,197,94,.5); box-shadow: 0 0 0 1px rgba(34,197,94,.25) inset; }
+    .chip { display: inline-block; align-self: flex-start; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+    .chip--accent { color: var(--accent); background: rgba(34,197,94,.12); }
+    .chip--overdue { color: var(--overdue); background: rgba(239,68,68,.12); }
+
+    /* footer */
+    .footer { border-top: 1px solid var(--border); padding: 36px 0; font-size: 14px; color: var(--muted); }
+    .footer .container { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
+
+    /* prose (privacy page) */
+    .prose { max-width: 720px; }
+    .prose h1 { font-size: clamp(30px, 4vw, 42px); margin-bottom: 8px; }
+    .prose h2 { font-size: 20px; margin-top: 40px; }
+    .prose p, .prose li { color: var(--muted); margin-top: 12px; font-size: 16px; }
+    .prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    @media (max-width: 720px) {
+      .hero { padding: 48px 0 64px; }
+      .hero .container { grid-template-columns: 1fr; gap: 40px; }
+      .hero-visual { order: -1; }
+      .glow { width: 300px; height: 300px; }
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .section { padding: 64px 0; }
+      .nav-links { gap: 16px; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      @supports (animation-timeline: view()) {
+        .card, .strip figure { animation: rise .6s ease-out both; animation-timeline: view(); animation-range: entry 0% entry 30%; }
+      }
+      @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="container">
+      <a class="brand" href="index.html"><img src="assets/icon.svg" alt="" width="28" height="28">Settled</a>
+      <nav class="nav-links" aria-label="Page">
+        <a href="index.html#features">Features</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container prose" style="padding-top:64px;padding-bottom:96px">
+    <span class="eyebrow">Privacy policy</span>
+    <h1 style="margin-top:12px">Your data stays on your phone.</h1>
+    <p class="mono" style="font-size:13px">Effective 17 September 2026 · applies to the Settled Android app (<code>com.hansukun.settled</code>)</p>
+
+    <h2>Summary</h2>
+    <p>Settled is an offline expense checklist. There is no account, no server, and no analytics. Everything you enter is stored in a database on your device and never leaves it unless you back it up yourself. The free version shows ads served by Google AdMob; the ad-free subscription removes them.</p>
+
+    <h2>What the app stores</h2>
+    <p>On your device only: your template of recurring expenses, each month generated from it, item names and amounts, which items you have marked paid, due days, and reminder settings. This data is kept in a local SQLite database and is deleted when you uninstall the app. We cannot see it and do not collect it.</p>
+
+    <h2>Advertising</h2>
+    <p>The free version shows a small banner and occasional native ad rows served by <strong>Google AdMob</strong>. AdMob may use your device's advertising ID and general device information to show and measure ads, under <a href="https://policies.google.com/technologies/ads">Google's advertising policy</a>. You can reset or limit the advertising ID in your Android settings under <em>Privacy › Ads</em>. Settled does not pass any of your expense data to the ad network. Subscribing to the ad-free plan turns ads off entirely.</p>
+
+    <h2>Google account and Drive</h2>
+    <p>Backing up to Google Drive is optional. If you choose it, the app asks you to sign in with Google and requests only the <code>https://www.googleapis.com/auth/drive.appdata</code> scope. That scope gives Settled access to a hidden application folder in your Drive that only this app can read or write; it cannot see any of your other Drive files. Backups are copies of the local database, kept in that folder until you delete them from within the app. You can revoke Settled's access at any time from your <a href="https://myaccount.google.com/permissions">Google account permissions</a>. Signing in shares your Google account name and email with the app so it can show which account is connected; this is not stored anywhere else.</p>
+
+    <h2>Purchases</h2>
+    <p>The ad-free subscription is sold through Google Play Billing. Google handles payment; the app only receives confirmation that the subscription is active. Settled never sees your payment details.</p>
+
+    <h2>Notifications</h2>
+    <p>Due-date reminders are scheduled locally on your device. Nothing is sent to a server to deliver them. You can turn reminders off per item or deny the notification permission entirely.</p>
+
+    <h2>Children</h2>
+    <p>Settled is not directed at children under 13 and does not knowingly collect information from them.</p>
+
+    <h2>Changes and contact</h2>
+    <p>If this policy changes, the new version will be published at this address with a new effective date. Questions: <a href="mailto:deguzmanhans05@gmail.com">deguzmanhans05@gmail.com</a>.</p>
+
+    <p style="margin-top:40px"><a href="index.html">← Back to Settled</a></p>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <span>© 2026 Settled · Built by Hans</span>
+      <span><a href="privacy.html">Privacy policy</a> · <a href="mailto:deguzmanhans05@gmail.com">deguzmanhans05@gmail.com</a></span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -248,6 +248,37 @@ def check_pricing(name: str) -> list[str]:
     return out
 
 
+PRIVACY_HEADINGS = [
+    "Summary",
+    "What the app stores",
+    "Advertising",
+    "Google account and Drive",
+    "Purchases",
+    "Notifications",
+    "Children",
+    "Changes and contact",
+]
+
+
+def check_privacy(name: str) -> list[str]:
+    page = load(name)
+    if page is None:
+        return []
+    out = []
+    for h in PRIVACY_HEADINGS:
+        if h not in page.text:
+            out.append(f"privacy.html: section '{h}' missing")
+    if "drive.appdata" not in page.text:
+        out.append("privacy.html: must name the drive.appdata scope")
+    if "deguzmanhans05@gmail.com" not in page.text:
+        out.append("privacy.html: contact address missing")
+    if not re.search(r"Effective \d{1,2} \w+ 20\d\d", page.text):
+        out.append("privacy.html: effective date missing")
+    if not any(h.startswith("index.html") for h in page.hrefs):
+        out.append("privacy.html: no link back to the brochure")
+    return out
+
+
 CHECKS = [
     ("files", check_files_exist, [None]),
     ("basics", check_page_basics, PAGES),
@@ -257,6 +288,7 @@ CHECKS = [
     ("hero", check_hero, ["index.html"]),
     ("features", check_features, ["index.html"]),
     ("pricing", check_pricing, ["index.html"]),
+    ("privacy", check_privacy, ["privacy.html"]),
 ]
 
 
