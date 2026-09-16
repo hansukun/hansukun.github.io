@@ -158,11 +158,32 @@ def check_links(name: str) -> list[str]:
     return out
 
 
+SCREENS = ["month", "month-settled", "template", "history", "settings"]
+
+
+def check_screens(_: str) -> list[str]:
+    out = []
+    for s in SCREENS:
+        for ext in ("webp", "png"):
+            p = ROOT / "assets" / "screens" / f"{s}.{ext}"
+            if not p.exists():
+                out.append(f"missing assets/screens/{s}.{ext}")
+                continue
+            if ext == "png":
+                head = p.read_bytes()[:24]
+                w = int.from_bytes(head[16:20], "big")   # IHDR width
+                h = int.from_bytes(head[20:24], "big")   # IHDR height
+                if w != 720 or abs(h - 1180) > 4:
+                    out.append(f"assets/screens/{s}.png is {w}x{h}, expected 720x1180")
+    return out
+
+
 CHECKS = [
     ("files", check_files_exist, [None]),
     ("basics", check_page_basics, PAGES),
     ("tokens", check_tokens, PAGES),
     ("links", check_links, PAGES),
+    ("screens", check_screens, [None]),
 ]
 
 
