@@ -19,7 +19,7 @@
 - Fonts: Inter for prose, JetBrains Mono for amounts, labels, step numbers, eyebrows.
 - Layout: max content width 1080px, 16px side gutters, single column below 720px, no horizontal scroll at 375px wide.
 - Phone frames scale with `clamp(220px, ..., 320px)`.
-- Copy: the app is called **Settled**, Android only, "Coming soon to Google Play". Contact address: `deguzmanhans05@gmail.com`. Credit: "Built by Hans".
+- Copy: the app is called **Settled**, Android only, "Coming soon to Google Play". Contact address: `devhansukun@gmail.com`. Credit: "Built by Hans".
 - No ad is ever visible in a screenshot on the site.
 - Commit after every task with a `feat:`/`chore:`/`docs:` message ending in `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
 - Working directory for every command: `E:\Hans\Projects\Web App Dev Page` (a git repo already exists there).
@@ -441,7 +441,7 @@ The stylesheet is complete here on purpose: later tasks only add markup.
   <footer class="footer">
     <div class="container">
       <span>© 2026 Settled · Built by Hans</span>
-      <span><a href="privacy.html">Privacy policy</a> · <a href="mailto:deguzmanhans05@gmail.com">deguzmanhans05@gmail.com</a></span>
+      <span><a href="privacy.html">Privacy policy</a> · <a href="mailto:devhansukun@gmail.com">devhansukun@gmail.com</a></span>
     </div>
   </footer>
 </body>
@@ -1028,7 +1028,7 @@ def check_privacy(name: str) -> list[str]:
             out.append(f"privacy.html: section '{h}' missing")
     if "drive.appdata" not in page.text:
         out.append("privacy.html: must name the drive.appdata scope")
-    if "deguzmanhans05@gmail.com" not in page.text:
+    if "devhansukun@gmail.com" not in page.text:
         out.append("privacy.html: contact address missing")
     if not re.search(r"Effective \d{1,2} \w+ 20\d\d", page.text):
         out.append("privacy.html: effective date missing")
@@ -1083,7 +1083,7 @@ Create `privacy.html` with the Write tool. Copy the entire `<head>` from `index.
     <p>Settled is not directed at children under 13 and does not knowingly collect information from them.</p>
 
     <h2>Changes and contact</h2>
-    <p>If this policy changes, the new version will be published at this address with a new effective date. Questions: <a href="mailto:deguzmanhans05@gmail.com">deguzmanhans05@gmail.com</a>.</p>
+    <p>If this policy changes, the new version will be published at this address with a new effective date. Questions: <a href="mailto:devhansukun@gmail.com">devhansukun@gmail.com</a>.</p>
 
     <p style="margin-top:40px"><a href="index.html">← Back to Settled</a></p>
   </main>
@@ -1091,7 +1091,7 @@ Create `privacy.html` with the Write tool. Copy the entire `<head>` from `index.
   <footer class="footer">
     <div class="container">
       <span>© 2026 Settled · Built by Hans</span>
-      <span><a href="privacy.html">Privacy policy</a> · <a href="mailto:deguzmanhans05@gmail.com">deguzmanhans05@gmail.com</a></span>
+      <span><a href="privacy.html">Privacy policy</a> · <a href="mailto:devhansukun@gmail.com">devhansukun@gmail.com</a></span>
     </div>
   </footer>
 </body>

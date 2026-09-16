@@ -270,7 +270,7 @@ def check_privacy(name: str) -> list[str]:
             out.append(f"privacy.html: section '{h}' missing")
     if "drive.appdata" not in page.text:
         out.append("privacy.html: must name the drive.appdata scope")
-    if "deguzmanhans05@gmail.com" not in page.text:
+    if "devhansukun@gmail.com" not in page.text:
         out.append("privacy.html: contact address missing")
     if not re.search(r"Effective \d{1,2} \w+ 20\d\d", page.text):
         out.append("privacy.html: effective date missing")
