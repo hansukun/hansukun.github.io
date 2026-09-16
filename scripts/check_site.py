@@ -228,6 +228,26 @@ def check_features(name: str) -> list[str]:
     return out
 
 
+def check_pricing(name: str) -> list[str]:
+    page = load(name)
+    if page is None:
+        return []
+    out = []
+    for i in ("pricing", "screens"):
+        if i not in page.ids:
+            out.append(f"index.html: missing id={i}")
+    for s in ("month-settled", "template", "history", "settings"):
+        if not any(f"screens/{s}.webp" in x for x in page.srcs):
+            out.append(f"index.html: screens strip missing {s}")
+    for t in ("7-day free trial", "Set on Google Play"):
+        if t not in page.text:
+            out.append(f"index.html: pricing copy '{t}' missing")
+    pricing_text = page.text.split("Free to use.", 1)[-1]
+    if re.search(r"[₱$€]\s?\d", pricing_text):
+        out.append("index.html: pricing must not state a currency amount")
+    return out
+
+
 CHECKS = [
     ("files", check_files_exist, [None]),
     ("basics", check_page_basics, PAGES),
@@ -236,6 +256,7 @@ CHECKS = [
     ("screens", check_screens, [None]),
     ("hero", check_hero, ["index.html"]),
     ("features", check_features, ["index.html"]),
+    ("pricing", check_pricing, ["index.html"]),
 ]
 
 
