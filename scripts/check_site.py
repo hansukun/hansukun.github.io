@@ -21,6 +21,17 @@ SETTLED_TOKENS = {
     "--overdue": "#ef4444",
 }
 TOKENS: dict[str, dict[str, str]] = {p: SETTLED_TOKENS for p in SETTLED_PAGES}
+PORTFOLIO_TOKENS = {
+    "--bg": "#0b0b0d",
+    "--grid": "#1c1c22",
+    "--surface": "#121216",
+    "--text": "#f4f4f5",
+    "--muted": "#a1a1aa",
+    "--dim": "#3f3f46",
+    "--accent": "#3b6cff",
+}
+TOKENS[PORTFOLIO] = PORTFOLIO_TOKENS
+TITLE_MUST_MENTION = {PORTFOLIO: "Hans De Guzman", **{p: "Settled" for p in SETTLED_PAGES}}
 
 
 class Page(HTMLParser):
@@ -100,7 +111,7 @@ def host_of(url: str) -> str | None:
 
 def check_files_exist(_: str) -> list[str]:
     out = []
-    for f in [".nojekyll", ".gitignore", "settled/assets/icon.svg", "settled/assets/icon-512.png", *PAGES]:
+    for f in [".nojekyll", ".gitignore", "assets/settled-icon.svg", "settled/assets/icon.svg", "settled/assets/icon-512.png", *PAGES]:
         if not (ROOT / f).exists():
             out.append(f"missing {f}")
     return out
@@ -113,8 +124,9 @@ def check_page_basics(name: str) -> list[str]:
     out = []
     if page.lang != "en":
         out.append(f"{name}: <html lang> should be 'en', got {page.lang!r}")
-    if not page.title or "Settled" not in page.title:
-        out.append(f"{name}: <title> must mention Settled, got {page.title!r}")
+    want = TITLE_MUST_MENTION[name]
+    if not page.title or want not in page.title:
+        out.append(f"{name}: <title> must mention {want}, got {page.title!r}")
     if 'name="viewport"' not in page.html:
         out.append(f"{name}: missing viewport meta")
     if page.inline_scripts or page.script_srcs:
@@ -299,6 +311,51 @@ def check_backlinks(name: str) -> list[str]:
     return out
 
 
+PORTFOLIO_COPY = [
+    "Hans De Guzman",
+    "Remote · Web Developer",
+    "What I work with",
+    "WordPress",
+    "React",
+    "Vue",
+    "React Native",
+    "Things I've shipped",
+    "Coming soon to Google Play",
+    "More coming soon",
+    "Let's build something.",
+    "devhansukun@gmail.com",
+]
+LINKEDIN = "https://www.linkedin.com/in/hansdg/"
+
+
+def check_portfolio(name: str) -> list[str]:
+    page = load(name)
+    if page is None:
+        return []
+    out = []
+    for i in ("skills", "apps", "contact"):
+        if i not in page.ids:
+            out.append(f"{name}: missing id={i}")
+    for t in PORTFOLIO_COPY:
+        if t not in page.text:
+            out.append(f"{name}: copy '{t}' missing")
+    if re.search(r"US company|employer", page.text, re.I):
+        out.append(f"{name}: must not mention an employer")
+    if "settled/" not in page.hrefs:
+        out.append(f"{name}: Settled card must link to settled/")
+    if "mailto:devhansukun@gmail.com" not in page.hrefs:
+        out.append(f"{name}: no mailto link")
+    if not re.search(rf'href="{re.escape(LINKEDIN)}"[^>]*target="_blank"[^>]*rel="noopener"', page.html):
+        out.append(f"{name}: LinkedIn link must open in a new tab with rel=noopener")
+    if "assets/settled-icon.svg" not in page.srcs:
+        out.append(f"{name}: Settled card icon missing")
+    if "Space+Grotesk" not in page.html or "JetBrains+Mono" not in page.html:
+        out.append(f"{name}: must load Space Grotesk and JetBrains Mono")
+    if not re.search(r"body\s*\{[^}]*background-image:\s*linear-gradient", page.html, re.S):
+        out.append(f"{name}: body should carry the grid background")
+    return out
+
+
 CHECKS = [
     ("files", check_files_exist, [None]),
     ("basics", check_page_basics, PAGES),
@@ -310,6 +367,7 @@ CHECKS = [
     ("pricing", check_pricing, ["settled/index.html"]),
     ("privacy", check_privacy, ["settled/privacy.html"]),
     ("backlinks", check_backlinks, SETTLED_PAGES),
+    ("portfolio", check_portfolio, [PORTFOLIO]),
 ]
 
 
