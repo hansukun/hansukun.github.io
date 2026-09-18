@@ -83,7 +83,8 @@ Deliberately distinct from the Settled page: bold grid / brutalist, on near-blac
   `#121216`, text and borders `#f4f4f5`, muted `#a1a1aa`, dim border `#3f3f46`, accent
   `#3b6cff`. Dark-only; `color-scheme: dark`; explicit `body` background.
 - **Grid paper**: two `linear-gradient`s on `body` at 28px spacing. No images.
-- **Type**: Space Grotesk for headings (900, uppercase, tracking −0.04em) and body (400);
+- **Type**: Space Grotesk for headings (700 — its heaviest weight — uppercase, tracking
+  −0.04em) and body (400);
   JetBrains Mono for eyebrows, labels, buttons, tags, meta lines. One Google Fonts `<link>`
   with `display=swap`.
 - **Shapes**: no `border-radius` except the app icon. 2px `--text` borders on cards,
