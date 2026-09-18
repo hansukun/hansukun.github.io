@@ -145,6 +145,7 @@
       .grid-3, .grid-2 { grid-template-columns: 1fr; }
       .section { padding: 64px 0; }
       .nav-links { gap: 16px; }
+      .back-text { display: none; }
     }
     @media (prefers-reduced-motion: no-preference) {
       @supports (animation-timeline: view()) {
@@ -159,6 +160,7 @@
     <div class="container">
       <a class="brand" href="#top"><img src="assets/icon.svg" alt="" width="28" height="28">Settled</a>
       <nav class="nav-links" aria-label="Page">
+        <a href="../" aria-label="Back to Hans De Guzman's portfolio"><span aria-hidden="true">←</span><span class="back-text"> Hans De Guzman</span></a>
         <a href="#features">Features</a>
         <a href="#pricing">Pricing</a>
         <a href="privacy.html">Privacy</a>
@@ -317,7 +319,7 @@
 
   <footer class="footer">
     <div class="container">
-      <span>© 2026 Settled · Built by Hans</span>
+      <span>© 2026 Settled · Built by <a href="../">Hans De Guzman</a></span>
       <span><a href="privacy.html">Privacy policy</a> · <a href="mailto:devhansukun@gmail.com">devhansukun@gmail.com</a></span>
     </div>
   </footer>

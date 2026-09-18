@@ -287,6 +287,18 @@ def check_privacy(name: str) -> list[str]:
     return out
 
 
+def check_backlinks(name: str) -> list[str]:
+    page = load(name)
+    if page is None:
+        return []
+    out = []
+    if "../" not in page.hrefs:
+        out.append(f"{name}: no link back to the portfolio (href=\"../\")")
+    if "Built by Hans De Guzman" not in page.text:
+        out.append(f"{name}: footer credit should read 'Built by Hans De Guzman'")
+    return out
+
+
 CHECKS = [
     ("files", check_files_exist, [None]),
     ("basics", check_page_basics, PAGES),
@@ -297,6 +309,7 @@ CHECKS = [
     ("features", check_features, ["settled/index.html"]),
     ("pricing", check_pricing, ["settled/index.html"]),
     ("privacy", check_privacy, ["settled/privacy.html"]),
+    ("backlinks", check_backlinks, SETTLED_PAGES),
 ]
 
 
