@@ -7,9 +7,11 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PAGES = ["index.html", "privacy.html"]
-ALLOWED_EXTERNAL_HOSTS = {"fonts.googleapis.com", "fonts.gstatic.com"}
-TOKENS = {
+PORTFOLIO = "index.html"
+SETTLED_PAGES = ["settled/index.html", "settled/privacy.html"]
+PAGES = [PORTFOLIO, *SETTLED_PAGES]
+ALLOWED_EXTERNAL_HOSTS = {"fonts.googleapis.com", "fonts.gstatic.com", "www.linkedin.com"}
+SETTLED_TOKENS = {
     "--bg": "#0a0a0a",
     "--card": "#141414",
     "--border": "#262626",
@@ -18,12 +20,14 @@ TOKENS = {
     "--accent": "#22c55e",
     "--overdue": "#ef4444",
 }
+TOKENS: dict[str, dict[str, str]] = {p: SETTLED_TOKENS for p in SETTLED_PAGES}
 
 
 class Page(HTMLParser):
     def __init__(self, path: Path) -> None:
         super().__init__()
         self.path = path
+        self.dir = path.parent
         self.html = path.read_text(encoding="utf-8")
         self.ids: set[str] = set()
         self.hrefs: list[str] = []
@@ -96,7 +100,7 @@ def host_of(url: str) -> str | None:
 
 def check_files_exist(_: str) -> list[str]:
     out = []
-    for f in [".nojekyll", "assets/icon.svg", "assets/icon-512.png", *PAGES]:
+    for f in [".nojekyll", ".gitignore", "settled/assets/icon.svg", "settled/assets/icon-512.png", *PAGES]:
         if not (ROOT / f).exists():
             out.append(f"missing {f}")
     return out
@@ -123,7 +127,7 @@ def check_tokens(name: str) -> list[str]:
     if page is None:
         return []
     out = []
-    for var, value in TOKENS.items():
+    for var, value in TOKENS.get(name, {}).items():
         if not re.search(rf"{re.escape(var)}\s*:\s*{re.escape(value)}", page.html, re.I):
             out.append(f"{name}: token {var}: {value} not defined on :root")
     if not re.search(r"body\s*\{[^}]*background", page.html, re.S):
@@ -140,6 +144,8 @@ def check_links(name: str) -> list[str]:
         if href.startswith("#"):
             if href != "#" and href[1:] not in page.ids:
                 out.append(f"{name}: anchor {href} has no matching id")
+        elif href.startswith("data:"):
+            continue
         elif href.startswith("mailto:"):
             continue
         elif host := host_of(href):
@@ -148,12 +154,14 @@ def check_links(name: str) -> list[str]:
         else:
             if href.startswith("/"):
                 out.append(f"{name}: root-absolute href {href} breaks on a Pages subpath")
-            elif not (ROOT / href.split("#")[0]).exists():
-                out.append(f"{name}: href {href} does not resolve")
+            else:
+                target = page.dir / href.split("#")[0]
+                if not target.exists() or (target.is_dir() and not (target / "index.html").exists()):
+                    out.append(f"{name}: href {href} does not resolve")
     for src in page.srcs:
         if src.startswith("/"):
             out.append(f"{name}: root-absolute src {src}")
-        elif host_of(src) is None and not (ROOT / src).exists():
+        elif host_of(src) is None and not (page.dir / src).exists():
             out.append(f"{name}: img src {src} does not resolve")
     return out
 
@@ -165,16 +173,16 @@ def check_screens(_: str) -> list[str]:
     out = []
     for s in SCREENS:
         for ext in ("webp", "png"):
-            p = ROOT / "assets" / "screens" / f"{s}.{ext}"
+            p = ROOT / "settled" / "assets" / "screens" / f"{s}.{ext}"
             if not p.exists():
-                out.append(f"missing assets/screens/{s}.{ext}")
+                out.append(f"missing settled/assets/screens/{s}.{ext}")
                 continue
             if ext == "png":
                 head = p.read_bytes()[:24]
                 w = int.from_bytes(head[16:20], "big")   # IHDR width
                 h = int.from_bytes(head[20:24], "big")   # IHDR height
                 if w != 720 or abs(h - 1180) > 4:
-                    out.append(f"assets/screens/{s}.png is {w}x{h}, expected 720x1180")
+                    out.append(f"settled/assets/screens/{s}.png is {w}x{h}, expected 720x1180")
     return out
 
 
@@ -184,15 +192,15 @@ def check_hero(name: str) -> list[str]:
         return []
     out = []
     if "Your monthly bills, settled." not in page.text:
-        out.append("index.html: hero headline missing")
+        out.append(f"{name}: hero headline missing")
     if "Coming soon to Google Play" not in page.text:
-        out.append("index.html: coming-soon caption missing")
+        out.append(f"{name}: coming-soon caption missing")
     if "assets/google-play-badge.svg" not in page.srcs:
-        out.append("index.html: badge image missing")
+        out.append(f"{name}: badge image missing")
     if not any("screens/month.webp" in s for s in page.srcs):
-        out.append("index.html: hero phone must show screens/month.webp")
+        out.append(f"{name}: hero phone must show screens/month.webp")
     if re.search(r'href="https?://play\.google\.com', page.html):
-        out.append("index.html: badge must not link to Play yet")
+        out.append(f"{name}: badge must not link to Play yet")
     return out
 
 
@@ -218,13 +226,13 @@ def check_features(name: str) -> list[str]:
     out = []
     for i in ("features", "how"):
         if i not in page.ids:
-            out.append(f"index.html: missing id={i}")
+            out.append(f"{name}: missing id={i}")
     for t in FEATURE_TITLES:
         if t not in page.text:
-            out.append(f"index.html: feature card '{t}' missing")
+            out.append(f"{name}: feature card '{t}' missing")
     for s in STEP_TITLES:
         if s not in page.text:
-            out.append(f"index.html: step '{s}' missing")
+            out.append(f"{name}: step '{s}' missing")
     return out
 
 
@@ -235,16 +243,16 @@ def check_pricing(name: str) -> list[str]:
     out = []
     for i in ("pricing", "screens"):
         if i not in page.ids:
-            out.append(f"index.html: missing id={i}")
+            out.append(f"{name}: missing id={i}")
     for s in ("month-settled", "template", "history", "settings"):
         if not any(f"screens/{s}.webp" in x for x in page.srcs):
-            out.append(f"index.html: screens strip missing {s}")
+            out.append(f"{name}: screens strip missing {s}")
     for t in ("7-day free trial", "Set on Google Play"):
         if t not in page.text:
-            out.append(f"index.html: pricing copy '{t}' missing")
+            out.append(f"{name}: pricing copy '{t}' missing")
     pricing_text = page.text.split("Free to use.", 1)[-1]
     if re.search(r"[₱$€]\s?\d", pricing_text):
-        out.append("index.html: pricing must not state a currency amount")
+        out.append(f"{name}: pricing must not state a currency amount")
     return out
 
 
@@ -267,15 +275,15 @@ def check_privacy(name: str) -> list[str]:
     out = []
     for h in PRIVACY_HEADINGS:
         if h not in page.text:
-            out.append(f"privacy.html: section '{h}' missing")
+            out.append(f"{name}: section '{h}' missing")
     if "drive.appdata" not in page.text:
-        out.append("privacy.html: must name the drive.appdata scope")
+        out.append(f"{name}: must name the drive.appdata scope")
     if "devhansukun@gmail.com" not in page.text:
-        out.append("privacy.html: contact address missing")
+        out.append(f"{name}: contact address missing")
     if not re.search(r"Effective \d{1,2} \w+ 20\d\d", page.text):
-        out.append("privacy.html: effective date missing")
+        out.append(f"{name}: effective date missing")
     if not any(h.startswith("index.html") for h in page.hrefs):
-        out.append("privacy.html: no link back to the brochure")
+        out.append(f"{name}: no link back to the brochure")
     return out
 
 
@@ -285,10 +293,10 @@ CHECKS = [
     ("tokens", check_tokens, PAGES),
     ("links", check_links, PAGES),
     ("screens", check_screens, [None]),
-    ("hero", check_hero, ["index.html"]),
-    ("features", check_features, ["index.html"]),
-    ("pricing", check_pricing, ["index.html"]),
-    ("privacy", check_privacy, ["privacy.html"]),
+    ("hero", check_hero, ["settled/index.html"]),
+    ("features", check_features, ["settled/index.html"]),
+    ("pricing", check_pricing, ["settled/index.html"]),
+    ("privacy", check_privacy, ["settled/privacy.html"]),
 ]
 
 
