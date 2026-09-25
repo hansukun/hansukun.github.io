@@ -154,6 +154,55 @@
       }
       @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
     }
+
+    /* ---- game accents (quiet subset) — docs/superpowers/specs/2026-09-25-jrpg-accents-design.md ---- */
+
+    /* glove cursor on nav links (desktop only), 1x */
+    .nav-links a { position: relative; }
+    .nav-links a::before {
+      content: "";
+      position: absolute; top: 50%; right: 100%;
+      width: 16px; height: 11px;
+      margin: -6px -2px 0 0;
+      background: url("../assets/game/glove.png") no-repeat;
+      image-rendering: pixelated;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* walking mini-Hans (green row) on the footer's top border */
+    .footer { position: relative; overflow-x: clip; }   /* the walker's lap ends off the right edge */
+    .walker { position: absolute; left: 0; right: 0; bottom: calc(100% + 1px); height: 48px; pointer-events: none; }
+    .walker i {
+      position: absolute; left: 0; bottom: 0;
+      width: 32px; height: 48px;
+      background: url("../assets/game/hans-walk.png") 0 100% / 400% 200% no-repeat;
+      image-rendering: pixelated;
+    }
+    .walker.is-paused, .walker.is-paused i { animation-play-state: paused; }
+    .walker.is-still, .walker.is-still i { animation: none; }
+    .walker.is-still i { left: var(--gutter); }
+
+    @media (min-width: 721px) {
+      .nav-links { gap: 30px; }
+      .nav-links a:hover::before,
+      .nav-links a:focus-visible::before { visibility: visible; }
+      .walker { height: 72px; }
+      .walker i { width: 48px; height: 72px; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .nav-links a::before { animation: glove-bob .7s steps(1, end) infinite; }
+      .walker { animation: walk 12s linear infinite; }
+      .walker i { animation: walk-frames .64s steps(4) infinite; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .walker i { left: var(--gutter); }
+    }
+
+    @keyframes glove-bob { 0%, 100% { transform: none; } 50% { transform: translateX(-4px); } }
+    @keyframes walk { from { transform: translateX(-48px); } to { transform: translateX(100%); } }
+    @keyframes walk-frames { to { background-position-x: 133.333%; } }
   </style>
 </head>
 <body>
@@ -202,6 +251,7 @@
   </main>
 
   <footer class="footer">
+    <div class="walker" data-walker aria-hidden="true"><i></i></div>
     <div class="container">
       <span>© 2026 Settled · Built by <a href="../">Hans De Guzman</a></span>
       <span><a href="privacy.html">Privacy policy</a> · <a href="mailto:devhansukun@gmail.com">devhansukun@gmail.com</a></span>

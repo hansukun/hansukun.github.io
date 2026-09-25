@@ -396,6 +396,7 @@ def check_portfolio(name: str) -> list[str]:
 GAME_MARKUP: dict[str, dict[str, int]] = {
     PORTFOLIO: {"data-type": 1, "data-reveal": 3, "data-spy": 3, "data-walker": 1},
     "settled/index.html": {"data-type": 1, "data-reveal": 16, "data-spy": 2, "data-walker": 1},
+    "settled/privacy.html": {"data-type": 0, "data-reveal": 0, "data-spy": 0, "data-walker": 1},
 }
 GAME_FORBID: dict[str, list[str]] = {"settled/index.html": ["animation-timeline"]}
 
