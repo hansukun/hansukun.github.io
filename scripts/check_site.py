@@ -240,6 +240,10 @@ def check_hero(name: str) -> list[str]:
         out.append(f"{name}: hero phone must show screens/month.webp")
     if re.search(r'href="https?://play\.google\.com', page.html):
         out.append(f"{name}: badge must not link to Play yet")
+    if not re.search(r'class="phone hero-phone" data-reveal>.*?screens/month-settled\.webp', page.html, re.S):
+        out.append(f"{name}: hero phone must stack month-settled for the SETTLED! moment")
+    if '<span class="settled-pop" aria-hidden="true">Settled!</span>' not in page.html:
+        out.append(f"{name}: hero phone needs the aria-hidden 'Settled!' pop")
     return out
 
 
@@ -391,8 +395,9 @@ def check_portfolio(name: str) -> list[str]:
 # Expected counts of each game attribute per page; attributes are matched in markup only.
 GAME_MARKUP: dict[str, dict[str, int]] = {
     PORTFOLIO: {"data-type": 1, "data-reveal": 3, "data-spy": 3, "data-walker": 1},
+    "settled/index.html": {"data-type": 1, "data-reveal": 16, "data-spy": 2, "data-walker": 1},
 }
-GAME_FORBID: dict[str, list[str]] = {}
+GAME_FORBID: dict[str, list[str]] = {"settled/index.html": ["animation-timeline"]}
 
 
 def check_game_markup(name: str) -> list[str]:

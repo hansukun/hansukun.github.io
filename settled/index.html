@@ -148,12 +148,122 @@
       .nav-links { gap: 16px; }
       .back-text { display: none; }
     }
-    @media (prefers-reduced-motion: no-preference) {
-      @supports (animation-timeline: view()) {
-        .card, .strip figure { animation: rise .6s ease-out both; animation-timeline: view(); animation-range: entry 0% entry 30%; }
-      }
-      @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    /* ---- game accents — docs/superpowers/specs/2026-09-25-jrpg-accents-design.md ---- */
+
+    /* glove cursor on nav links (desktop only), 1x */
+    .nav-links a { position: relative; }
+    .nav-links a::before {
+      content: "";
+      position: absolute; top: 50%; right: 100%;
+      width: 16px; height: 11px;
+      margin: -6px -2px 0 0;
+      background: url("../assets/game/glove.png") no-repeat;
+      image-rendering: pixelated;
+      visibility: hidden;
+      pointer-events: none;
     }
+    .nav-links a[aria-current] { color: var(--accent); }
+
+    /* hero dialog box */
+    .dialog {
+      position: relative;
+      padding: 14px 18px 26px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .dialog.is-done::after {
+      content: "▼";
+      content: "▼" / "";
+      position: absolute; right: 14px; bottom: 6px;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    /* hero phone: month-settled stacked on top, pop badge */
+    .hero-phone .shot-settled { position: absolute; inset: 8px; opacity: 0; }
+    .settled-pop {
+      position: absolute; left: 50%; top: 42%; z-index: 1;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--bg);
+      font-family: var(--mono); font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0);
+      pointer-events: none;
+    }
+
+    /* walking mini-Hans (green row) on the footer's top border */
+    .footer { position: relative; overflow-x: clip; }   /* the walker's lap ends off the right edge */
+    .walker { position: absolute; left: 0; right: 0; bottom: calc(100% + 1px); height: 48px; pointer-events: none; }
+    .walker i {
+      position: absolute; left: 0; bottom: 0;
+      width: 32px; height: 48px;
+      background: url("../assets/game/hans-walk.png") 0 100% / 400% 200% no-repeat;
+      image-rendering: pixelated;
+    }
+    .walker.is-paused, .walker.is-paused i { animation-play-state: paused; }
+    .walker.is-still, .walker.is-still i { animation: none; }
+    .walker.is-still i { left: var(--gutter); }
+
+    @media (min-width: 721px) {
+      .nav-links { gap: 30px; }
+      .nav-links a[aria-current]::before,
+      .nav-links a:hover::before,
+      .nav-links a:focus-visible::before { visibility: visible; }
+      .walker { height: 72px; }
+      .walker i { width: 48px; height: 72px; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .nav-links a::before { animation: glove-bob .7s steps(1, end) infinite; }
+      .dialog.is-done::after { animation: blink 1s steps(1, end) infinite; }
+      @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+        .hero h1 em {
+          background: linear-gradient(100deg, var(--accent) 40%, rgba(245, 245, 245, .95) 50%, var(--accent) 60%) 100% 0 / 300% 100%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          animation: glint 3.5s ease-in-out infinite;
+        }
+      }
+      .hero-phone::after {
+        content: "";
+        position: absolute; inset: 8px;
+        border-radius: 28px;
+        background: linear-gradient(transparent 48%, rgba(34, 197, 94, .12) 50%, transparent 52%) 0 100% / 100% 300% no-repeat;
+        animation: phone-scan 4s linear infinite;
+        pointer-events: none;
+      }
+      .hero-phone.is-in .shot-settled { animation: shot-in .6s ease-out 2.5s both; }
+      .hero-phone.is-in .settled-pop { animation: pop 2.2s ease-out 2.8s both; }
+      .js .card[data-reveal], .js .strip figure[data-reveal] {
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity .6s ease-out, transform .6s ease-out;
+      }
+      .js .card[data-reveal].is-in, .js .strip figure[data-reveal].is-in { opacity: 1; transform: none; }
+      .walker { animation: walk 12s linear infinite; }
+      .walker i { animation: walk-frames .64s steps(4) infinite; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .walker i { left: var(--gutter); }
+    }
+
+    @keyframes glove-bob { 0%, 100% { transform: none; } 50% { transform: translateX(-4px); } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes glint { 0% { background-position: 100% 0; } 60%, 100% { background-position: 0 0; } }
+    @keyframes phone-scan { to { background-position: 0 0; } }
+    @keyframes shot-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+      15% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
+      25%, 80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    }
+    @keyframes walk { from { transform: translateX(-48px); } to { transform: translateX(100%); } }
+    @keyframes walk-frames { to { background-position-x: 133.333%; } }
   </style>
 </head>
 <body>
@@ -162,8 +272,8 @@
       <a class="brand" href="#top"><img src="assets/icon.svg" alt="" width="28" height="28">Settled</a>
       <nav class="nav-links" aria-label="Page">
         <a href="../" aria-label="Back to Hans De Guzman's portfolio"><span aria-hidden="true">←</span><span class="back-text"> Hans De Guzman</span></a>
-        <a href="#features">Features</a>
-        <a href="#pricing">Pricing</a>
+        <a href="#features" data-spy>Features</a>
+        <a href="#pricing" data-spy>Pricing</a>
         <a href="privacy.html">Privacy</a>
       </nav>
     </div>
@@ -175,7 +285,7 @@
         <div>
           <span class="eyebrow">Android · offline · no account</span>
           <h1 style="margin-top:14px">Your monthly bills, <em>settled.</em></h1>
-          <p class="lead">An offline checklist for the expenses you pay every month — the spreadsheet you already keep, as an app.</p>
+          <p class="lead dialog" data-type>An offline checklist for the expenses you pay every month — the spreadsheet you already keep, as an app.</p>
           <div class="hero-cta">
             <span class="btn-badge" aria-disabled="true" title="Not on Google Play yet">
               <img src="assets/google-play-badge.svg" alt="Coming soon on Google Play" width="200" height="60">
@@ -185,11 +295,16 @@
         </div>
         <div class="hero-visual">
           <div class="glow" aria-hidden="true"></div>
-          <div class="phone">
+          <div class="phone hero-phone" data-reveal>
             <picture>
               <source srcset="assets/screens/month.webp" type="image/webp">
               <img src="assets/screens/month.png" alt="Settled's month screen: pools of expenses with a checkbox per item, due dates, and a progress bar of what's been paid" width="720" height="1180" fetchpriority="high">
             </picture>
+            <picture class="shot-settled">
+              <source srcset="assets/screens/month-settled.webp" type="image/webp">
+              <img src="assets/screens/month-settled.png" alt="" width="720" height="1180" loading="lazy">
+            </picture>
+            <span class="settled-pop" aria-hidden="true">Settled!</span>
           </div>
         </div>
       </div>
@@ -202,17 +317,17 @@
           <p>The same routine as the sheet — without the sheet.</p>
         </div>
         <div class="grid-3">
-          <div class="card">
+          <div class="card" data-reveal>
             <span class="step-num">01</span>
             <h3>Set up your template once</h3>
             <p>Group your recurring expenses into pools — WALLET, UTILITIES, whatever your sheet calls them — with an amount and an optional due day for each.</p>
           </div>
-          <div class="card">
+          <div class="card" data-reveal>
             <span class="step-num">02</span>
             <h3>Tick things off as you pay</h3>
             <p>Each item is a checkbox. Pools total themselves and light up when everything in them is paid. The header keeps score.</p>
           </div>
-          <div class="card">
+          <div class="card" data-reveal>
             <span class="step-num">03</span>
             <h3>It rolls into next month</h3>
             <p>A fresh month is generated from your template. Last month stays exactly as you left it.</p>
@@ -228,32 +343,32 @@
           <h2>Everything the spreadsheet did. A few things it couldn't.</h2>
         </div>
         <div class="grid-3">
-          <div class="card">
+          <div class="card" data-reveal>
             <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 10h18M9 10v10"/></svg></div>
             <h3>Pools and totals</h3>
             <p>Group items the way your sheet does. Each pool has its own total and turns green when everything in it is paid.</p>
           </div>
-          <div class="card">
+          <div class="card" data-reveal>
             <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0v5l2 3H4l2-3zM10 20a2 2 0 0 0 4 0"/></svg></div>
             <h3>Due-date reminders</h3>
             <p>Give an item a due day and get a nudge. Overdue items say so in red. Paying one cancels its reminder.</p>
           </div>
-          <div class="card">
+          <div class="card" data-reveal>
             <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></div>
             <h3>Month history and trend</h3>
             <p>Every month is kept. Flip back to see what you paid, and a chart shows how it's moving.</p>
           </div>
-          <div class="card">
+          <div class="card" data-reveal>
             <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg></div>
             <h3>A template that never rewrites history</h3>
             <p>Edit the template and this month and later ones follow. Earlier months read exactly as they did.</p>
           </div>
-          <div class="card">
+          <div class="card" data-reveal>
             <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M11 18h2"/></svg></div>
             <h3>No account, no sync, no cloud</h3>
             <p>Everything lives in a database on your phone. Works on a plane, in a basement, or with data off.</p>
           </div>
-          <div class="card">
+          <div class="card" data-reveal>
             <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></div>
             <h3>Backups you control</h3>
             <p>Back up to Google Drive or a file when you want to, restore when you need to, and export any month as CSV.</p>
@@ -268,19 +383,19 @@
           <h2>Dark, quiet, and quick to read.</h2>
         </div>
         <div class="strip">
-          <figure>
+          <figure data-reveal>
             <div class="phone"><picture><source srcset="assets/screens/month-settled.webp" type="image/webp"><img src="assets/screens/month-settled.png" alt="A fully paid month: every pool outlined green and marked completed" width="720" height="1180" loading="lazy"></picture></div>
             <figcaption>A settled month</figcaption>
           </figure>
-          <figure>
+          <figure data-reveal>
             <div class="phone"><picture><source srcset="assets/screens/template.webp" type="image/webp"><img src="assets/screens/template.png" alt="The template editor with pools, items, amounts and reminder settings" width="720" height="1180" loading="lazy"></picture></div>
             <figcaption>The template</figcaption>
           </figure>
-          <figure>
+          <figure data-reveal>
             <div class="phone"><picture><source srcset="assets/screens/history.webp" type="image/webp"><img src="assets/screens/history.png" alt="History: each past month listed with how many items were paid and its total" width="720" height="1180" loading="lazy"></picture></div>
             <figcaption>History and trend</figcaption>
           </figure>
-          <figure>
+          <figure data-reveal>
             <div class="phone"><picture><source srcset="assets/screens/settings.webp" type="image/webp"><img src="assets/screens/settings.png" alt="Settings: template, reminders, backup and restore, export, and the ad-free plan" width="720" height="1180" loading="lazy"></picture></div>
             <figcaption>Settings and backups</figcaption>
           </figure>
@@ -295,7 +410,7 @@
           <h2>Free to use. Pay only to lose the ads.</h2>
         </div>
         <div class="grid-2">
-          <div class="card price">
+          <div class="card price" data-reveal>
             <span class="chip chip--accent">Free</span>
             <span class="amount">Free <small>forever</small></span>
             <ul>
@@ -304,7 +419,7 @@
               <li>Never an ad in Settings, the template, or a form</li>
             </ul>
           </div>
-          <div class="card price price--accent">
+          <div class="card price price--accent" data-reveal>
             <span class="chip chip--accent">Ad-free</span>
             <span class="amount">Set on Google Play <small>/ month</small></span>
             <ul>
@@ -319,6 +434,7 @@
   </main>
 
   <footer class="footer">
+    <div class="walker" data-walker aria-hidden="true"><i></i></div>
     <div class="container">
       <span>© 2026 Settled · Built by <a href="../">Hans De Guzman</a></span>
       <span><a href="privacy.html">Privacy policy</a> · <a href="mailto:devhansukun@gmail.com">devhansukun@gmail.com</a></span>
