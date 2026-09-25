@@ -1,6 +1,7 @@
 """Static checks for hansukun.github.io (portfolio + Settled). Run: python scripts/check_site.py"""
 from __future__ import annotations
 
+import os
 import re
 import sys
 from html.parser import HTMLParser
@@ -11,6 +12,7 @@ PORTFOLIO = "index.html"
 SETTLED_PAGES = ["settled/index.html", "settled/privacy.html"]
 PAGES = [PORTFOLIO, *SETTLED_PAGES]
 ALLOWED_EXTERNAL_HOSTS = {"fonts.googleapis.com", "fonts.gstatic.com", "www.linkedin.com"}
+GAME_JS = "assets/game/game.js"
 SETTLED_TOKENS = {
     "--bg": "#0a0a0a",
     "--card": "#141414",
@@ -43,7 +45,7 @@ class Page(HTMLParser):
         self.ids: set[str] = set()
         self.hrefs: list[str] = []
         self.srcs: list[str] = []
-        self.script_srcs: list[str] = []
+        self.scripts: list[dict[str, str | None]] = []
         self.inline_scripts = 0
         self.lang: str | None = None
         self.title: str | None = None
@@ -69,9 +71,8 @@ class Page(HTMLParser):
             self.hrefs.append(a["href"])
         if tag == "script":
             self._in_script = True
-            if "src" in a:
-                self.script_srcs.append(a["src"])
-            else:
+            self.scripts.append(a)
+            if "src" not in a:
                 self.inline_scripts += 1
         if tag == "style":
             self._in_style = True
@@ -107,11 +108,16 @@ def host_of(url: str) -> str | None:
     return m.group(1) if m else None
 
 
+def rel(page: Page, target: str) -> str:
+    """`target` (repo-root relative) as seen from `page`'s directory, with / separators."""
+    return os.path.relpath(ROOT / target, page.dir).replace(os.sep, "/")
+
+
 # ---- checks ---------------------------------------------------------------
 
 def check_files_exist(_: str) -> list[str]:
     out = []
-    for f in [".nojekyll", ".gitignore", "assets/settled-icon.svg", "settled/assets/icon.svg", "settled/assets/icon-512.png", *PAGES]:
+    for f in [".nojekyll", ".gitignore", "assets/settled-icon.svg", "settled/assets/icon.svg", "settled/assets/icon-512.png", GAME_JS, *PAGES]:
         if not (ROOT / f).exists():
             out.append(f"missing {f}")
     return out
@@ -129,8 +135,11 @@ def check_page_basics(name: str) -> list[str]:
         out.append(f"{name}: <title> must mention {want}, got {page.title!r}")
     if 'name="viewport"' not in page.html:
         out.append(f"{name}: missing viewport meta")
-    if page.inline_scripts or page.script_srcs:
-        out.append(f"{name}: pages must not contain <script>")
+    if page.inline_scripts:
+        out.append(f"{name}: inline <script> is not allowed")
+    want = rel(page, GAME_JS)
+    if not (len(page.scripts) == 1 and page.scripts[0].get("src") == want and "defer" in page.scripts[0]):
+        out.append(f'{name}: must load exactly one <script src="{want}" defer>')
     return out
 
 

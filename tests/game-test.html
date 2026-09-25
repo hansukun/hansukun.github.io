@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>game.js tests</title>
+  <style>body { font: 14px/1.4 monospace; margin: 16px; } #result { white-space: pre; }</style>
+</head>
+<body>
+  <pre id="result">running…</pre>
+
+  <div id="reduced">
+    <p id="t0" data-type>Hello <b>big</b> world.</p>
+    <div id="r0" data-reveal>reduced reveal</div>
+    <div id="w0" data-walker>reduced walker</div>
+  </div>
+
+  <div id="slow">
+    <p id="t2" data-type>Slow text here.</p>
+  </div>
+
+  <div id="normal">
+    <p id="t1" data-type>Hello <b>big</b> world.</p>
+    <div id="r1" data-reveal>near reveal</div>
+    <div id="w1" data-walker>near walker</div>
+    <div style="height: 3000px"></div>
+    <div id="r2" data-reveal>far reveal</div>
+    <div id="w2" data-walker>far walker</div>
+    <nav><a id="l1" data-spy href="#s1">one</a> <a id="l2" data-spy href="#s2">two</a></nav>
+    <section id="s1" style="height: 120vh">section one</section>
+    <section id="s2" style="height: 120vh">section two</section>
+  </div>
+
+  <script>window.hansGameManual = true;</script>
+  <script src="../assets/game/game.js"></script>
+  <script>
+    const results = [];
+    const check = (name, cond) => results.push((cond ? "PASS " : "FAIL ") + name);
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const $ = (id) => document.getElementById(id);
+    const typedCopy = (box) => box.querySelector('[aria-hidden="true"]');
+    const stillHidden = (box) => !!typedCopy(box).querySelector('[style*="visibility"]');
+
+    (async () => {
+      hansGame.start({ root: $("reduced"), reduced: true });
+      hansGame.start({ root: $("slow"), reduced: false, charMs: 1000, startDelay: 0 });
+      hansGame.start({ root: $("normal"), reduced: false, charMs: 1, startDelay: 0 });
+
+      check("html gets the js class", document.documentElement.classList.contains("js"));
+
+      check("reduced: typed box is left as written", $("t0").textContent === "Hello big world." && !typedCopy($("t0")));
+      check("reduced: typed box is marked done", $("t0").classList.contains("is-done"));
+
+      const t1 = $("t1");
+      check("typed copy is aria-hidden", !!typedCopy(t1));
+      check("typed copy keeps <b>", !!(typedCopy(t1) && typedCopy(t1).querySelector("b")));
+      check("screen-reader copy holds the full sentence", t1.firstElementChild.textContent === "Hello big world.");
+      check("focusable while typing", t1.getAttribute("tabindex") === "0");
+      check("starts with characters hidden", stillHidden(t1));
+      await wait(400);
+      check("finishes typing", t1.classList.contains("is-done") && !stillHidden(t1));
+      check("not focusable once done", !t1.hasAttribute("tabindex"));
+
+      const t2 = $("t2");
+      check("slow box still typing", !t2.classList.contains("is-done"));
+      t2.click();
+      check("click skips to the end", t2.classList.contains("is-done") && !stillHidden(t2));
+
+      check("reduced: reveal is immediate", $("r0").classList.contains("is-in"));
+      check("reduced: walker is still", $("w0").classList.contains("is-still"));
+      await wait(200);
+      check("reveals an element in view", $("r1").classList.contains("is-in"));
+      check("does not reveal an element far below", !$("r2").classList.contains("is-in"));
+      check("walker in view is not paused", !$("w1").classList.contains("is-paused"));
+      check("walker off-screen is paused", $("w2").classList.contains("is-paused"));
+      check("no nav link current at the top", !document.querySelector("#normal [aria-current]"));
+
+      $("r2").scrollIntoView({ block: "center" });
+      await wait(300);
+      check("reveals an element once scrolled to", $("r2").classList.contains("is-in"));
+      check("walker resumes when scrolled to", !$("w2").classList.contains("is-paused"));
+
+      $("s2").scrollIntoView();
+      await wait(300);
+      check("current link follows the section in view",
+        $("l2").getAttribute("aria-current") === "true" && !$("l1").hasAttribute("aria-current"));
+
+      const failed = results.filter((r) => r.startsWith("FAIL")).length;
+      $("result").textContent = results.join("\n") + "\n" + (failed ? failed + " FAILED" : "ALL PASS");
+      window.scrollTo(0, 0);
+    })().catch((e) => { $("result").textContent = "ERROR " + e.message; });
+  </script>
+</body>
+</html>
