@@ -78,7 +78,7 @@
     h1 .block { display: inline-block; background: var(--accent); color: #000; padding: 0 .12em; }
     .lead { font-family: var(--mono); color: var(--muted); font-size: 15px; max-width: 480px; margin-top: 24px; }
     .lead b { color: var(--text); }
-    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 28px; }
     .btn {
       display: inline-block;
       padding: 10px 16px;
@@ -164,6 +164,117 @@
       .btn:not(.btn--ghost):hover, .btn:not(.btn--ghost):focus-visible,
       .app:hover, .app:focus-visible { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--accent); }
     }
+
+    /* ---- game accents — docs/superpowers/specs/2026-09-25-jrpg-accents-design.md ---- */
+
+    /* glove cursor: 1x, fingertip overlapping the element's left edge by 2px */
+    .nav-links a, .btn, .app { position: relative; }
+    .nav-links a::before, .btn::before, .app::before {
+      content: "";
+      position: absolute; top: 50%; right: 100%;
+      width: 16px; height: 11px;
+      margin: -6px -2px 0 0;
+      background: url("assets/game/glove.png") no-repeat;
+      image-rendering: pixelated;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .btn:hover::before, .btn:focus-visible::before,
+    .app:hover::before, .app:focus-visible::before { visibility: visible; }
+    .nav-links a[aria-current] { color: var(--accent); }
+
+    /* hero dialog box; game.js types into it and adds .is-done */
+    .dialog {
+      position: relative;
+      max-width: 520px;
+      padding: 14px 18px 24px;
+      border: 2px solid var(--text);
+      background: var(--surface);
+      box-shadow: 4px 4px 0 var(--accent);
+    }
+    .dialog.is-done::after {
+      content: "▼";
+      content: "▼" / "";
+      position: absolute; right: 10px; bottom: 4px;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    /* hero: scanline stage, shine clip */
+    .hero { position: relative; overflow: hidden; }
+    .hero > .container { position: relative; }
+    h1 .block { position: relative; clip-path: inset(0); }
+
+    /* EXP bars on the skill cards */
+    .exp {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 14px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .exp-bar { flex: 1; height: 6px; border: 1px solid var(--dim); }
+    .exp-bar i { display: block; height: 100%; background: var(--accent); transform-origin: left; }
+
+    /* walking mini-Hans on the footer's top border */
+    .contact { padding-bottom: 80px; }
+    .footer { position: relative; overflow-x: clip; }   /* the walker's lap ends off the right edge */
+    .walker { position: absolute; left: 0; right: 0; bottom: calc(100% + 2px); height: 48px; pointer-events: none; }
+    .walker i {
+      position: absolute; left: 0; bottom: 0;
+      width: 32px; height: 48px;
+      background: url("assets/game/hans-walk.png") 0 0 / 400% 200% no-repeat;
+      image-rendering: pixelated;
+    }
+    .walker.is-paused, .walker.is-paused i { animation-play-state: paused; }
+    .walker.is-still, .walker.is-still i { animation: none; }
+    .walker.is-still i { left: var(--gutter); }
+
+    @media (min-width: 720px) {
+      .nav-links { gap: 28px; }
+      .nav-links a[aria-current]::before,
+      .nav-links a:hover::before,
+      .nav-links a:focus-visible::before { visibility: visible; }
+      .contact { padding-bottom: 104px; }
+      .walker { height: 72px; }
+      .walker i { width: 48px; height: 72px; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .nav-links a::before, .btn::before, .app::before { animation: glove-bob .7s steps(1, end) infinite; }
+      .dialog.is-done::after { animation: blink 1s steps(1, end) infinite; }
+      h1 .block::after {
+        content: "";
+        position: absolute; top: 0; bottom: 0; left: -40%;
+        width: 30%;
+        background: linear-gradient(90deg, transparent, rgba(244, 244, 245, .55), transparent);
+        animation: shine 3.5s ease-in-out infinite;
+        pointer-events: none;
+      }
+      .hero::before {
+        content: "";
+        position: absolute; inset: 0;
+        background: linear-gradient(transparent calc(50% - 30px), rgba(59, 108, 255, .06), transparent calc(50% + 30px));
+        animation: scan 6s linear infinite;
+        pointer-events: none;
+      }
+      .js .card[data-reveal] .exp-bar i { transform: scaleX(0); transition: transform 1.2s ease-out var(--stagger, 0ms); }
+      .js .card[data-reveal].is-in .exp-bar i { transform: none; }
+      .walker { animation: walk 12s linear infinite; }
+      .walker i { animation: walk-frames .64s steps(4) infinite; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .walker i { left: var(--gutter); }
+    }
+
+    @keyframes glove-bob { 0%, 100% { transform: none; } 50% { transform: translateX(-4px); } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes shine {
+      from { transform: translateX(0) skewX(-20deg); }
+      60%, to { transform: translateX(560%) skewX(-20deg); }
+    }
+    @keyframes scan { from { transform: translateY(-55%); } to { transform: translateY(55%); } }
+    @keyframes walk { from { transform: translateX(-48px); } to { transform: translateX(100%); } }
+    @keyframes walk-frames { to { background-position-x: 133.333%; } }
   </style>
 </head>
 <body>
@@ -171,9 +282,9 @@
     <div class="container">
       <a href="#top">hansukun</a>
       <nav class="nav-links" aria-label="Page">
-        <a href="#skills">Skills</a>
-        <a href="#apps">Apps</a>
-        <a href="#contact">Contact</a>
+        <a href="#skills" data-spy>Skills</a>
+        <a href="#apps" data-spy>Apps</a>
+        <a href="#contact" data-spy>Contact</a>
       </nav>
     </div>
   </header>
@@ -183,7 +294,7 @@
       <div class="container">
         <span class="eyebrow">Remote · Web Developer</span>
         <h1>Hans<br>De Guzman<br><span class="block">Web Dev</span></h1>
-        <p class="lead">I build sites and apps with <b>WordPress</b>, <b>React</b> and <b>Vue</b>. Recently started shipping <b>Android</b> apps on the side.</p>
+        <p class="lead dialog" data-type>I build sites and apps with <b>WordPress</b>, <b>React</b> and <b>Vue</b>. Recently started shipping <b>Android</b> apps on the side.</p>
         <div class="btn-row">
           <a class="btn" href="mailto:devhansukun@gmail.com">Get in touch →</a>
           <a class="btn btn--ghost" href="https://www.linkedin.com/in/hansdg/" target="_blank" rel="noopener">LinkedIn</a>
@@ -196,20 +307,23 @@
         <span class="eyebrow">01 / Skills</span>
         <h2>What I work with</h2>
         <div class="skills">
-          <div class="card">
+          <div class="card" data-reveal style="--stagger: 0ms">
             <h3>WordPress</h3>
             <p>Custom themes and plugins, block editor, WooCommerce, performance and hosting.</p>
             <div class="tags"><span class="tag">PHP</span><span class="tag">Gutenberg</span><span class="tag">ACF</span><span class="tag">WooCommerce</span></div>
+            <div class="exp"><span>Exp</span><span class="exp-bar" aria-hidden="true"><i></i></span><span>7+ yrs</span></div>
           </div>
-          <div class="card">
+          <div class="card" data-reveal style="--stagger: 150ms">
             <h3>React</h3>
             <p>Component-driven front ends, hooks, state, and integration with REST/GraphQL APIs.</p>
             <div class="tags"><span class="tag">TypeScript</span><span class="tag">Next.js</span><span class="tag">Tailwind</span></div>
+            <div class="exp"><span>Exp</span><span class="exp-bar" aria-hidden="true"><i></i></span><span>7+ yrs</span></div>
           </div>
-          <div class="card">
+          <div class="card" data-reveal style="--stagger: 300ms">
             <h3>Vue</h3>
             <p>Vue 3 with the Composition API, Pinia, and Nuxt for full apps and admin UIs.</p>
             <div class="tags"><span class="tag">Vue 3</span><span class="tag">Pinia</span><span class="tag">Nuxt</span></div>
+            <div class="exp"><span>Exp</span><span class="exp-bar" aria-hidden="true"><i></i></span><span>7+ yrs</span></div>
           </div>
         </div>
         <div class="callout">
@@ -257,9 +371,10 @@
   </main>
 
   <footer class="footer">
+    <div class="walker" data-walker aria-hidden="true"><i></i></div>
     <div class="container">
       <span>© 2026 Hans De Guzman</span>
-      <span>Built with plain HTML &amp; CSS</span>
+      <span>End of status screen · Thanks for viewing</span>
     </div>
   </footer>
 </body>

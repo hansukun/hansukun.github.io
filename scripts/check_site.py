@@ -351,6 +351,7 @@ PORTFOLIO_COPY = [
     "More coming soon",
     "Let's build something.",
     "devhansukun@gmail.com",
+    "End of status screen · Thanks for viewing",
 ]
 LINKEDIN = "https://www.linkedin.com/in/hansdg/"
 
@@ -380,6 +381,37 @@ def check_portfolio(name: str) -> list[str]:
         out.append(f"{name}: must load Space Grotesk and JetBrains Mono")
     if not re.search(r"body\s*\{[^}]*background-image:\s*linear-gradient", page.html, re.S):
         out.append(f"{name}: body should carry the grid background")
+    if "Built with plain HTML" in page.text:
+        out.append(f"{name}: old 'Built with plain HTML & CSS' footer note is still there")
+    if page.text.count("7+ yrs") != 3:
+        out.append(f"{name}: each of the three skill cards needs an 'Exp … 7+ yrs' row")
+    return out
+
+
+# Expected counts of each game attribute per page; attributes are matched in markup only.
+GAME_MARKUP: dict[str, dict[str, int]] = {
+    PORTFOLIO: {"data-type": 1, "data-reveal": 3, "data-spy": 3, "data-walker": 1},
+}
+GAME_FORBID: dict[str, list[str]] = {}
+
+
+def check_game_markup(name: str) -> list[str]:
+    want = GAME_MARKUP.get(name)
+    page = load(name)
+    if want is None or page is None:
+        return []
+    out = []
+    for attr, n in want.items():
+        got = len(re.findall(rf"\s{attr}[\s>=]", page.html))
+        if got != n:
+            out.append(f"{name}: expected {n} x {attr}, found {got}")
+    for asset in ("assets/game/glove.png", "assets/game/hans-walk.png"):
+        ref = rel(page, asset)
+        if f'url("{ref}")' not in page.html:
+            out.append(f'{name}: CSS must use url("{ref}")')
+    for s in GAME_FORBID.get(name, []):
+        if s in page.html:
+            out.append(f"{name}: must not contain {s!r}")
     return out
 
 
@@ -396,6 +428,7 @@ CHECKS = [
     ("privacy", check_privacy, ["settled/privacy.html"]),
     ("backlinks", check_backlinks, SETTLED_PAGES),
     ("portfolio", check_portfolio, [PORTFOLIO]),
+    ("game", check_game_markup, PAGES),
 ]
 
 
