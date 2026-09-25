@@ -26,7 +26,8 @@ Chosen in brainstorming (mockups in `.superpowers/brainstorm/275-1790330254/`):
 - No FF-style blue menu windows, Suikoden frames, starfield, command-menu nav, or locked
   `???` app slot (directions A/B, not chosen).
 - No glove cursor on non-interactive elements (skill, step, feature, pricing cards; the
-  disabled Play badge).
+  disabled Play badge), nor on inline links in running text or the footer — a glove left
+  of an inline link would cover the words before it.
 - No custom mouse cursor, sound, easter eggs, or sprite interactions.
 - No colour changes to either palette; no layout changes beyond what is listed here.
 - No build step, bundler, or third-party JS.
@@ -39,7 +40,12 @@ assets/game/
 ├── glove.png            16×11 pointer
 └── game.js              shared script, loaded with defer by all three pages
 scripts/make_sprites.py  pixel grids as text → writes the two PNGs (Pillow)
+tests/game-test.html     in-browser tests for game.js (fixtures + assertions, noindex)
 ```
+
+`game.js` exposes `window.hansGame.start(options)` so the test page can run it on its own
+fixtures with fixed timings and a forced reduced-motion flag; on real pages it starts
+itself.
 
 - Portfolio references `assets/game/…`; `settled/index.html` and `settled/privacy.html`
   reference `../assets/game/…`.
@@ -137,15 +143,19 @@ OccWWWWWO.......
 ## Rendering rules (both sites)
 
 - Pixel art is shown only at integer scales with `image-rendering: pixelated`: sprite 3×
-  (48×72) from 720px up and 2× (32×48) below; glove 1.5× is not an integer, so the glove is
-  shown at 1× (16×11) below 720px and 2× (32×22) from 720px up.
-- The glove is a CSS `::before` background on the interactive element, positioned just
-  outside its left edge, vertically centred. It is decorative and never replaces the
-  browser focus outline.
-- Glove bob: `translateX(0 → -4px)`, `steps(2)`, 0.7s, infinite.
+  (48×72) from 720px up and 2× (32×48) below. The glove is shown at 1× (16×11) everywhere:
+  at 2× it would not fit the 16–24px page gutters or the 12–22px gaps between buttons and
+  nav links.
+- The glove is a CSS `::before` background on the interactive element, just outside its
+  left edge with its fingertip overlapping the edge by 2px (so it needs 14px of room),
+  vertically centred. It is decorative and never replaces the browser focus outline.
+  To give it that room: portfolio `.btn-row` gap 12 → 16px; nav-link gap 28px (portfolio)
+  and 30px (Settled pages) where the nav glove shows.
+- Glove bob: 2 frames, `translateX(0)` / `translateX(-4px)`, `steps(1)` per segment, 0.7s,
+  infinite.
 - Sprite walk: `background-position` over the sheet with `steps(4)` at 0.64s per cycle
-  (160ms a frame), plus a linear `translateX` across the footer container width in 12s,
-  looping back in from the left edge.
+  (160ms a frame), plus a linear `translateX` across the full footer width in 12s, entering
+  from the viewport's left edge and leaving at its right.
 
 ## `assets/game/game.js`
 
@@ -185,7 +195,8 @@ final state and animate only when `html.js` (set as the script's first line) is 
   background, `4px 4px 0 var(--accent)` shadow, mono text, padding leaving room for the
   `▼` (blinking `--accent`, 1s `steps(1)`) in the bottom-right. `data-type` on it. Copy is
   unchanged.
-- **Shine.** `h1 .block` gets `position: relative; overflow: hidden` and an `::after`
+- **Shine.** `h1 .block` gets `position: relative; clip-path: inset(0)` (not
+  `overflow: hidden`, which would move an inline-block's baseline) and an `::after`
   white-to-transparent skewed band sweeping left to right every 3.5s.
 - **Scanline.** A `.hero::before` band 60px tall,
   `linear-gradient(transparent, rgba(59,108,255,.06), transparent)`, translating top to
@@ -193,7 +204,7 @@ final state and animate only when `html.js` (set as the script's first line) is 
 - **EXP bars.** Each skill card gets a last row: `EXP`, a bar, `7+ YRS` (mono, 10–11px,
   `--muted`). Bar: 6px tall, 1px `--dim` border, `--accent` fill. All three are full
   (7+ years each). Cards carry `data-reveal` and `--stagger` 0 / 150 / 300ms; the fill
-  animates `width 0 → 100%` over 1.2s ease-out on `.is-in`. The Android callout gets no
+  animates `scaleX(0 → 1)` from the left over 1.2s ease-out on `.is-in`. The Android callout gets no
   bar.
 - **Sprite.** A `div.walker[data-walker]` in the footer, positioned on the footer's top
   border, using sheet row 0. The contact section's bottom padding grows by the sprite
@@ -205,7 +216,7 @@ final state and animate only when `html.js` (set as the script's first line) is 
 ## Settled (`settled/index.html`)
 
 - **Glove.** On nav links (`Features`, `Pricing` via scroll-spy; `← Hans De Guzman`,
-  `Privacy` on hover/focus) and on footer links. Not on cards or the disabled Play badge.
+  `Privacy` on hover/focus). Not on cards, footer links or the disabled Play badge.
 - **Shine.** The `em` "settled." gets a text-clipped glint: `background: linear-gradient`
   of `--accent` with a white band, `background-clip: text`, `color: transparent`, band
   position animated every 3.5s. Falls back to plain `--accent` text where `background-clip:
@@ -228,7 +239,7 @@ final state and animate only when `html.js` (set as the script's first line) is 
 
 ## Privacy (`settled/privacy.html`)
 
-Quiet subset: glove on nav, in-text and footer links; sprite in the footer (row 1). No
+Quiet subset: glove on nav links; sprite in the footer (row 1). No
 typing, shine, scanline or reveals.
 
 ## Reduced motion
