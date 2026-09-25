@@ -88,7 +88,8 @@
     els.forEach((el) => io.observe(el));
   }
 
-  // Marks the nav link whose section crosses the middle of the viewport.
+  // Marks the nav link whose section crosses the middle of the viewport. At the bottom of
+  // the page the last link wins, since a short last section may never reach the middle.
   function spy(links) {
     const bySection = new Map();
     for (const a of links) {
@@ -97,22 +98,26 @@
       if (section) bySection.set(section, a);
     }
     if (!bySection.size || !hasIO) return;
+    const sections = Array.from(bySection.keys());
     const inBand = new Set();
+    const mark = () => {
+      const page = document.documentElement;
+      const atBottom = window.scrollY > 0 && window.innerHeight + window.scrollY >= page.scrollHeight - 2;
+      const current = atBottom ? sections[sections.length - 1] : sections.find((s) => inBand.has(s));
+      bySection.forEach((a, section) => {
+        if (section === current) a.setAttribute("aria-current", "true");
+        else a.removeAttribute("aria-current");
+      });
+    };
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
         if (e.isIntersecting) inBand.add(e.target);
         else inBand.delete(e.target);
       }
-      let current = null;
-      bySection.forEach((a, section) => {
-        if (!current && inBand.has(section)) current = section;
-      });
-      bySection.forEach((a, section) => {
-        if (section === current) a.setAttribute("aria-current", "true");
-        else a.removeAttribute("aria-current");
-      });
+      mark();
     }, { rootMargin: "-45% 0px -50% 0px" });
-    bySection.forEach((a, section) => io.observe(section));
+    sections.forEach((section) => io.observe(section));
+    window.addEventListener("scroll", mark, { passive: true });
   }
 
   // Pauses a walking sprite while it is off-screen; holds it still under reduced motion.

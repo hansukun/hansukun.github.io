@@ -26,9 +26,10 @@
     <div style="height: 3000px"></div>
     <div id="r2" data-reveal>far reveal</div>
     <div id="w2" data-walker>far walker</div>
-    <nav><a id="l1" data-spy href="#s1">one</a> <a id="l2" data-spy href="#s2">two</a></nav>
+    <nav><a id="l1" data-spy href="#s1">one</a> <a id="l2" data-spy href="#s2">two</a> <a id="l3" data-spy href="#s3">three</a></nav>
     <section id="s1" style="height: 120vh">section one</section>
     <section id="s2" style="height: 120vh">section two</section>
+    <section id="s3" style="height: 30vh">section three (never reaches the middle)</section>
   </div>
 
   <script>window.hansGameManual = true;</script>
@@ -84,6 +85,11 @@
       await wait(300);
       check("current link follows the section in view",
         $("l2").getAttribute("aria-current") === "true" && !$("l1").hasAttribute("aria-current"));
+
+      window.scrollTo(0, document.documentElement.scrollHeight);
+      await wait(300);
+      check("last link is current at the bottom of the page",
+        $("l3").getAttribute("aria-current") === "true" && !$("l2").hasAttribute("aria-current"));
 
       const failed = results.filter((r) => r.startsWith("FAIL")).length;
       $("result").textContent = results.join("\n") + "\n" + (failed ? failed + " FAILED" : "ALL PASS");
