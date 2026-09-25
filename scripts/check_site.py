@@ -1,4 +1,4 @@
-"""Static checks for the Settled brochure site. Run: python scripts/check_site.py"""
+"""Static checks for hansukun.github.io (portfolio + Settled). Run: python scripts/check_site.py"""
 from __future__ import annotations
 
 import re
@@ -181,6 +181,11 @@ def check_links(name: str) -> list[str]:
 SCREENS = ["month", "month-settled", "template", "history", "settings"]
 
 
+def png_size(p: Path) -> tuple[int, int]:
+    head = p.read_bytes()[:24]
+    return int.from_bytes(head[16:20], "big"), int.from_bytes(head[20:24], "big")   # IHDR
+
+
 def check_screens(_: str) -> list[str]:
     out = []
     for s in SCREENS:
@@ -190,11 +195,24 @@ def check_screens(_: str) -> list[str]:
                 out.append(f"missing settled/assets/screens/{s}.{ext}")
                 continue
             if ext == "png":
-                head = p.read_bytes()[:24]
-                w = int.from_bytes(head[16:20], "big")   # IHDR width
-                h = int.from_bytes(head[20:24], "big")   # IHDR height
+                w, h = png_size(p)
                 if w != 720 or abs(h - 1180) > 4:
                     out.append(f"settled/assets/screens/{s}.png is {w}x{h}, expected 720x1180")
+    return out
+
+
+GAME_ASSETS = {"assets/game/hans-walk.png": (64, 48), "assets/game/glove.png": (16, 11)}
+
+
+def check_game_assets(_: str) -> list[str]:
+    out = []
+    for f, want in GAME_ASSETS.items():
+        p = ROOT / f
+        if not p.exists():
+            out.append(f"missing {f} (run python scripts/make_sprites.py)")
+        elif png_size(p) != want:
+            w, h = png_size(p)
+            out.append(f"{f} is {w}x{h}, expected {want[0]}x{want[1]}")
     return out
 
 
@@ -362,6 +380,7 @@ CHECKS = [
     ("tokens", check_tokens, PAGES),
     ("links", check_links, PAGES),
     ("screens", check_screens, [None]),
+    ("game-assets", check_game_assets, [None]),
     ("hero", check_hero, ["settled/index.html"]),
     ("features", check_features, ["settled/index.html"]),
     ("pricing", check_pricing, ["settled/index.html"]),
