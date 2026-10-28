@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>Happy Haus app.js tests</title>
+  <style>body { font: 14px/1.4 monospace; margin: 16px; } #result { white-space: pre; } #fixture { opacity: .4; }</style>
+</head>
+<body>
+  <pre id="result">running…</pre>
+
+  <div id="fixture">
+    <article class="bin" id="p-forest-nest" data-product="forest-nest" data-name="Forest Nest slide set" data-price="12450">
+      <button class="bin-face" type="button" aria-expanded="false" aria-controls="d-forest-nest">
+        <span class="bin-photo"><img data-photo src="../works/happy-haus-toys/assets/products/forest-nest-beige.webp" alt="Forest Nest slide set in Autumn Beige"><span data-color-label>Autumn Beige</span></span>
+      </button>
+      <div class="bin-detail" id="d-forest-nest">
+        <ul class="swatches">
+          <li><button class="swatch" type="button" data-swatch="0" data-color="Autumn Beige" data-src="../works/happy-haus-toys/assets/products/forest-nest-beige.webp" aria-pressed="true">Autumn Beige</button></li>
+          <li><button class="swatch" type="button" data-swatch="1" data-color="Spring Green" data-src="../works/happy-haus-toys/assets/products/forest-nest-green.webp" aria-pressed="false">Spring Green</button></li>
+        </ul>
+        <a class="order" href="https://ig.me/m/happyhaustoys" target="_blank" rel="noopener" data-order data-color="Autumn Beige">Message to order</a>
+        <button class="bin-close" type="button">Back to the shelf</button>
+      </div>
+    </article>
+    <article class="bin" id="p-whale" data-product="whale" data-name="Whale 2-in-1 bookshelf &amp; storage" data-price="4600">
+      <button class="bin-face" type="button" aria-expanded="false" aria-controls="d-whale">
+        <span class="bin-photo"><img data-photo src="../works/happy-haus-toys/assets/products/whale.webp" alt="Whale 2-in-1 bookshelf &amp; storage in Grey &amp; White"><span data-color-label>Grey &amp; White</span></span>
+      </button>
+      <div class="bin-detail" id="d-whale">
+        <p class="one-color">Comes in Grey &amp; White</p>
+        <a class="order" href="https://ig.me/m/happyhaustoys" target="_blank" rel="noopener" data-order data-color="Grey &amp; White">Message to order</a>
+        <button class="bin-close" type="button">Back to the shelf</button>
+      </div>
+    </article>
+    <div class="counter"><a class="order" id="counter" href="https://ig.me/m/happyhaustoys" target="_blank" rel="noopener" data-order>Message us</a></div>
+  </div>
+
+  <script>
+    window.HAPPY_HAUS_NO_AUTOINIT = true;
+    // clipboard stub: records what was written, resolves or rejects on demand
+    window.clip = { text: null, fail: false };
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText: (t) => (clip.fail ? Promise.reject(new Error("denied")) : ((clip.text = t), Promise.resolve())) },
+    });
+    // link guard: note whether the app cancelled the click, then stop the real navigation
+    window.lastPrevented = null;
+    window.addEventListener("click", (e) => {
+      if (e.target.closest("a")) { lastPrevented = e.defaultPrevented; e.preventDefault(); }
+    });
+  </script>
+  <script src="../works/happy-haus-toys/app.js"></script>
+  <script>
+    const results = [];
+    const check = (name, cond, detail = "") => results.push((cond ? "PASS " : "FAIL ") + name + (cond || !detail ? "" : ": " + detail));
+    const tick = () => new Promise((r) => setTimeout(r, 0));
+    const $ = (s, root = document) => root.querySelector(s);
+    const toastText = () => ($(".toast") || {}).textContent || "";
+    (async () => {
+      const H = window.HappyHaus;
+      const nest = $("#p-forest-nest"), whale = $("#p-whale");
+
+      check("peso formats thousands", H.peso(13450) === "₱13,450" && H.peso(2600) === "₱2,600", H.peso(13450));
+      check("product note is exact",
+        H.orderNote("Forest Nest slide set", "Autumn Beige", 12450) === "Hi Happy Haus! I'd like to order the Forest Nest slide set in Autumn Beige (₱12,450). Is it available?",
+        H.orderNote("Forest Nest slide set", "Autumn Beige", 12450));
+      check("counter note is exact", H.orderNote() === "Hi Happy Haus! I'd like to ask about your toys.", H.orderNote());
+
+      H.init($("#fixture"));
+      check("init hides every detail",
+        [...document.querySelectorAll(".bin-detail")].every((d) => d.hidden) &&
+        [...document.querySelectorAll(".bin-face")].every((b) => b.getAttribute("aria-expanded") === "false"));
+
+      $(".bin-face", whale).click();
+      $(".bin-face", nest).click();
+      check("opening one bin closes the other",
+        nest.classList.contains("open") && !$(".bin-detail", nest).hidden && !whale.classList.contains("open") && $(".bin-detail", whale).hidden &&
+        $(".bin-face", whale).getAttribute("aria-expanded") === "false" && $(".bin-face", nest).getAttribute("aria-expanded") === "true");
+
+      $('[data-swatch="1"]', nest).click();
+      const img = $("img[data-photo]", nest);
+      check("swatch swaps photo, label and order color",
+        img.src.endsWith("forest-nest-green.webp") && img.alt === "Forest Nest slide set in Spring Green" &&
+        $("[data-color-label]", nest).textContent === "Spring Green" && $("[data-order]", nest).dataset.color === "Spring Green" &&
+        $('[data-swatch="1"]', nest).getAttribute("aria-pressed") === "true" && $('[data-swatch="0"]', nest).getAttribute("aria-pressed") === "false",
+        `${img.src} | ${img.alt}`);
+
+      $("[data-order]", nest).click();
+      await tick(); await tick();
+      check("order copies the chosen color",
+        clip.text === "Hi Happy Haus! I'd like to order the Forest Nest slide set in Spring Green (₱12,450). Is it available?" &&
+        toastText() === "Order note copied. Paste it in the chat with @happyhaustoys.", `${clip.text} | ${toastText()}`);
+      check("order click does not cancel navigation", lastPrevented === false, String(lastPrevented));
+
+      clip.fail = true;
+      $("[data-order]", whale).click();
+      await tick(); await tick();
+      check("copy failure falls back to naming the product",
+        toastText() === "Tell us in the chat: Whale 2-in-1 bookshelf & storage – Grey & White", toastText());
+      clip.fail = false;
+
+      $("#counter").click();
+      await tick(); await tick();
+      check("counter copies the general note", clip.text === "Hi Happy Haus! I'd like to ask about your toys.", clip.text);
+
+      $(".bin-face", nest).click(); // nest was open: this closes it
+      $(".bin-face", nest).click(); // and opens it again
+      $(".bin-detail a", nest).focus();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      check("escape closes and refocuses",
+        !nest.classList.contains("open") && $(".bin-detail", nest).hidden && document.activeElement === $(".bin-face", nest));
+
+      $(".bin-face", whale).click();
+      $(".bin-close", whale).click();
+      check("back to the shelf refocuses",
+        !whale.classList.contains("open") && document.activeElement === $(".bin-face", whale));
+
+      const failed = results.filter((r) => r.startsWith("FAIL")).length;
+      $("#result").textContent = results.join("\n") + "\n" + (failed ? failed + " FAILED" : `PASS ${results.length}/${results.length}`);
+    })().catch((e) => { $("#result").textContent = "ERROR " + e.message; });
+  </script>
+</body>
+</html>
