@@ -422,6 +422,46 @@ def check_game_markup(name: str) -> list[str]:
     return out
 
 
+# ---- Happy Haus Toys (works/happy-haus-toys) -------------------------------
+
+HH_DIR = "works/happy-haus-toys"
+HH_POSTS = {
+    "tree-white": "De05qQQEi2z",
+    "tree-green": "De05sxuEqCW",
+    "forest-house-beige": "De05SmAkpin",
+    "forest-house-green": "De05KsWEtDz",
+    "forest-nest-beige": "De0e8zYEq6J",
+    "forest-nest-green": "De0fHyTElXr",
+    "shop-grey": "De04-ltkqmY",
+    "shop-beige": "De047OGkp_K",
+    "whale": "De042ngEgbD",
+    "bubble": "De0ekwAkqoO",
+    "serene": "De0dvSqkohY",
+}
+
+
+def check_hh_assets(_: str) -> list[str]:
+    out = []
+    files = {f"{HH_DIR}/assets/products/{stem}.webp": post for stem, post in HH_POSTS.items()}
+    files[f"{HH_DIR}/assets/logo-art.png"] = "De042ngEgbD"
+    for f, post in files.items():
+        p = ROOT / f
+        if not p.exists():
+            out.append(f"missing {f}")
+            continue
+        # impeccable embeds provenance in PNG tEXt, and in a <file>.json sidecar for formats it can't write into
+        side = ROOT / (f + ".json")
+        record = side.read_text(encoding="utf-8") if side.exists() else p.read_bytes().decode("latin-1")
+        if post not in record:
+            out.append(f"{f}: provenance must name Instagram post {post}")
+    icon = ROOT / HH_DIR / "assets" / "icon.png"
+    if not icon.exists():
+        out.append(f"missing {HH_DIR}/assets/icon.png")
+    elif png_size(icon) != (180, 180):
+        out.append(f"{HH_DIR}/assets/icon.png is {png_size(icon)}, expected (180, 180)")
+    return out
+
+
 CHECKS = [
     ("files", check_files_exist, [None]),
     ("basics", check_page_basics, PAGES),
@@ -436,6 +476,7 @@ CHECKS = [
     ("backlinks", check_backlinks, SETTLED_PAGES),
     ("portfolio", check_portfolio, [PORTFOLIO]),
     ("game", check_game_markup, PAGES),
+    ("hh-assets", check_hh_assets, [None]),
 ]
 
 
