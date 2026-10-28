@@ -115,6 +115,48 @@
     .callout p { color: var(--muted); font-size: 14px; margin-top: 4px; }
     .callout .tags { margin-top: 0; }
 
+    /* works: client sites in browser frames; one featured project spans the row */
+    .works { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 28px; }
+    .work {
+      display: flex; flex-direction: column;
+      border: 2px solid var(--text);
+      background: var(--surface);
+      box-shadow: 6px 6px 0 var(--accent);
+    }
+    .work--featured { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+    .work-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 10px;
+      border-bottom: 2px solid var(--text);
+      font-family: var(--mono); font-size: 11px; color: var(--muted);
+    }
+    .work-dots { display: flex; gap: 4px; flex-shrink: 0; }
+    .work-dots i { display: block; width: 8px; height: 8px; border: 1px solid var(--muted); }
+    .work-url { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chip {
+      flex-shrink: 0;
+      padding: 1px 7px;
+      font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    }
+    .chip--live { background: var(--accent); color: #000; }
+    .chip--here { border: 1px solid var(--text); color: var(--text); }
+    .work-shot { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; background: var(--bg); }
+    .work-info { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 16px 18px 18px; }
+    .work--featured .work-info { justify-content: center; border-left: 2px solid var(--text); }
+    .work-info p { color: var(--muted); font-size: 14px; }
+    .work-info .tags { margin-top: 0; }
+    .work-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: auto; }
+    .work .go { font-family: var(--mono); font-weight: 700; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+    .work-empty { grid-column: 1 / -1; border: 2px dashed var(--dim); }
+    .work-empty .work-bar { border-bottom: 2px dashed var(--dim); }
+    .work-empty-body {
+      display: grid; justify-items: center; align-content: center; gap: 14px;
+      min-height: 200px; padding: 24px;
+      font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+    }
+    .load-bar { width: min(220px, 70%); height: 8px; border: 1px solid var(--dim); }
+    .load-bar i { display: block; width: 40%; height: 100%; background: var(--accent); }
+
     /* apps */
     .apps { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 28px; }
     .app {
@@ -156,20 +198,24 @@
     @media (max-width: 719.98px) {
       .hero { padding: 56px 0 48px; }
       .section { padding: 48px 0; }
-      .skills, .apps { grid-template-columns: 1fr; }
+      .skills, .apps, .works, .work--featured { grid-template-columns: minmax(0, 1fr); }
+      .work--featured .work-info { border-left: 0; border-top: 2px solid var(--text); }
       .nav-links { gap: 14px; }
     }
     @media (prefers-reduced-motion: no-preference) {
-      .btn:not(.btn--ghost), .app { transition: transform .12s ease, box-shadow .12s ease; }
+      .btn:not(.btn--ghost), .app, .work { transition: transform .12s ease, box-shadow .12s ease; }
       .btn:not(.btn--ghost):hover, .btn:not(.btn--ghost):focus-visible,
-      .app:hover, .app:focus-visible { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--accent); }
+      .app:hover, .app:focus-visible,
+      .work:hover, .work:focus-visible { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--accent); }
+      .load-bar i { animation: load 2.4s steps(6, end) infinite; }
     }
+    @keyframes load { from { width: 0; } to { width: 100%; } }
 
     /* ---- game accents — docs/superpowers/specs/2026-09-25-jrpg-accents-design.md ---- */
 
     /* glove cursor: 1x, fingertip overlapping the element's left edge by 2px */
-    .nav-links a, .btn, .app { position: relative; }
-    .nav-links a::before, .btn::before, .app::before {
+    .nav-links a, .btn, .app, .work { position: relative; }
+    .nav-links a::before, .btn::before, .app::before, .work::before {
       content: "";
       position: absolute; top: 50%; right: 100%;
       width: 16px; height: 11px;
@@ -180,7 +226,8 @@
       pointer-events: none;
     }
     .btn:hover::before, .btn:focus-visible::before,
-    .app:hover::before, .app:focus-visible::before { visibility: visible; }
+    .app:hover::before, .app:focus-visible::before,
+    .work:hover::before, .work:focus-visible::before { visibility: visible; }
     .nav-links a[aria-current] { color: var(--accent); }
 
     /* hero dialog box; game.js types into it and adds .is-done */
@@ -240,7 +287,7 @@
     }
 
     @media (prefers-reduced-motion: no-preference) {
-      .nav-links a::before, .btn::before, .app::before { animation: glove-bob .7s steps(1, end) infinite; }
+      .nav-links a::before, .btn::before, .app::before, .work::before { animation: glove-bob .7s steps(1, end) infinite; }
       .dialog.is-done::after { animation: blink 1s steps(1, end) infinite; }
       h1 .block::after {
         content: "";
@@ -283,6 +330,7 @@
       <a href="#top">hansukun</a>
       <nav class="nav-links" aria-label="Page">
         <a href="#skills" data-spy>Skills</a>
+        <a href="#works" data-spy>Works</a>
         <a href="#apps" data-spy>Apps</a>
         <a href="#contact" data-spy>Contact</a>
       </nav>
@@ -336,9 +384,54 @@
       </div>
     </section>
 
+    <section class="section" id="works">
+      <div class="container">
+        <span class="eyebrow">02 / Works</span>
+        <h2>Client work</h2>
+        <div class="works">
+          <!-- Add a project by copying a card below, then delete .work-empty.
+               At most one card gets .work--featured; it spans the row. Screenshots: assets/works/<slug>.png at 16:10.
+
+          Live site, featured (opens in a new tab):
+          <a class="work work--featured" href="https://example.com/" target="_blank" rel="noopener">
+            <div>
+              <div class="work-bar"><span class="work-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="work-url">example.com</span><span class="chip chip--live">Live</span></div>
+              <img class="work-shot" src="assets/works/slug.png" alt="" width="1280" height="800" loading="lazy">
+            </div>
+            <div class="work-info">
+              <span class="meta">Furniture store · 2025</span>
+              <h3>Project name</h3>
+              <p>One sentence on what was built.</p>
+              <div class="tags"><span class="tag">WordPress</span><span class="tag">WooCommerce</span></div>
+              <span class="go">Visit site →</span>
+            </div>
+          </a>
+
+          Build hosted on this site, under works/<slug>/:
+          <a class="work" href="works/slug/">
+            <div class="work-bar"><span class="work-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="work-url">hansukun / works / slug</span><span class="chip chip--here">On this site</span></div>
+            <img class="work-shot" src="assets/works/slug.png" alt="" width="1280" height="800" loading="lazy">
+            <div class="work-info">
+              <span class="meta">Internal dashboard · 2026</span>
+              <h3>Project name</h3>
+              <div class="work-foot"><div class="tags"><span class="tag">Vue 3</span></div><span class="go">Open →</span></div>
+            </div>
+          </a>
+          -->
+          <div class="work-empty">
+            <div class="work-bar" aria-hidden="true"><span class="work-dots"><i></i><i></i><i></i></span><span class="work-url">hansukun / works</span></div>
+            <div class="work-empty-body">
+              <p>First project loading…</p>
+              <span class="load-bar" aria-hidden="true"><i></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="apps">
       <div class="container">
-        <span class="eyebrow">02 / Apps</span>
+        <span class="eyebrow">03 / Apps</span>
         <h2>Things I've shipped</h2>
         <div class="apps">
           <a class="app" href="settled/">
@@ -359,7 +452,7 @@
 
     <section class="section contact" id="contact">
       <div class="container">
-        <span class="eyebrow">03 / Contact</span>
+        <span class="eyebrow">04 / Contact</span>
         <h2>Let's build something.</h2>
         <p>Open to remote work. Email is the fastest way to reach me.</p>
         <div class="btn-row">
