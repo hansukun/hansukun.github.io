@@ -74,7 +74,7 @@ a { color: var(--ink); text-underline-offset: 3px; }
 .note {
   position: relative;
   background-color: var(--paper);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .33 0 0 0 0 .2 0 0 0 -1.6 1.05'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .33 0 0 0 0 .2 0 0 0 -1.6 1.05'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E");
   color: var(--ink);
   border-radius: 4px;
 }
@@ -212,7 +212,8 @@ html { scrollbar-color: var(--ink-soft) var(--cream); }
 ::-webkit-scrollbar-thumb { background: var(--ink-soft); border: 3px solid var(--cream); border-radius: 999px; }
 
 /* the shop front: awning, hanging sign, products in bins on shelves */
-.front { border-top: 14px solid var(--ink); text-align: center; padding-bottom: 34px; }
+.front { text-align: center; padding-bottom: 34px; }
+.front::before { content: ""; display: block; height: 14px; background: var(--ink); }
 .awning {
   height: 96px;
   background: repeating-linear-gradient(90deg, var(--sun) 0 46px, #fff3d2 46px 92px);
@@ -238,11 +239,14 @@ html { scrollbar-color: var(--ink-soft) var(--cream); }
 .intro p { margin: 14px auto 0; max-width: 34ch; font-size: 17px; font-weight: 700; color: var(--ink); }
 
 .store { max-width: 1180px; margin: 0 auto; padding: 4px 16px 40px; }
-.shelf { margin-top: 48px; }
+.shelf { margin-top: 48px; text-align: center; }
+.shelf .bins { text-align: left; }
 .shelf-title { font-size: 27px; margin-left: 2px; }
-.bins { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 14px; margin-top: 20px; }
-@media (min-width: 720px) { .bins { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 22px; } }
-@media (min-width: 1060px) { .bins { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* short shelves center under the sign instead of leaning left; touching planks read as one shelf unit */
+.bins { --cols: 2; --gap: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 30px var(--gap); margin-top: 20px; }
+.bin { flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); min-width: 0; }
+@media (min-width: 720px) { .bins { --cols: 3; --gap: 22px; row-gap: 36px; } }
+@media (min-width: 1060px) { .bins { --cols: 4; } }
 
 .bin { position: relative; scroll-margin-top: 16px; }
 .bin-face { display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; border-radius: 22px; }
@@ -265,7 +269,11 @@ html { scrollbar-color: var(--ink-soft) var(--cream); }
   transition: translate .35s var(--ease);
 }
 .bin-photo img { width: 100%; height: 100%; object-fit: cover; }
-.bin-photo .holiday { position: absolute; top: 10px; left: 8px; font-size: 12px; }
+.bin-photo .holiday { position: absolute; left: 8px; bottom: 12px; font-size: 12px; }
+.bin-price { position: absolute; top: 8px; right: 8px; font-size: 15px; }
+@media (max-width: 719px) { .bin:not(.open) .bin-price { top: 6px; right: 6px; min-width: 4.3em; font-size: 11.5px; } }
+.bin.open .bin-price { font-size: 19px; top: 14px; right: 14px; }
+.bin.open .bin-photo .holiday { bottom: auto; top: 16px; left: 14px; font-size: 14px; }
 .bin-face:hover .bin-photo { translate: 0 -5px; }
 
 .tag {
@@ -273,20 +281,20 @@ html { scrollbar-color: var(--ink-soft) var(--cream); }
   width: 90%; margin: 14px auto 0;
   padding: 16px 12px 10px;
   border-radius: 8px 8px 14px 14px;
-  background: radial-gradient(circle at 50% 9px, var(--cream) 0 4px, rgb(139 94 60 / .5) 4.5px 5.5px, transparent 6px), #fffaf0;
+  background: #fffaf0;
   box-shadow: 0 6px 14px -8px rgb(14 51 99 / .4);
   rotate: -2deg;
   transform-origin: 50% 0;
 }
 .bin:nth-child(even) .tag { rotate: 2deg; }
 .tag::before { content: ""; position: absolute; top: -15px; left: calc(50% - 1px); width: 2px; height: 20px; background: var(--cocoa); }
+.tag::after { content: ""; position: absolute; top: 4px; left: calc(50% - 5px); width: 6px; height: 6px; border: 2px solid rgb(139 94 60 / .5); border-radius: 50%; background: var(--cream); }
 .tag-name { display: block; font-family: var(--display); font-weight: 800; font-size: 17px; line-height: 1.1; color: var(--ink); text-wrap: balance; }
 .tag-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 6px; }
-.tag-price { font-family: var(--display); font-weight: 800; font-size: 20px; color: var(--ink-deep); background: linear-gradient(transparent 58%, var(--tape) 58%); font-variant-numeric: tabular-nums; }
 .tag-dots { display: inline-flex; gap: 4px; }
 .tag-dots i { width: 14px; height: 14px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1.5px rgb(14 51 99 / .2); }
 
-.bin.open { grid-column: 1 / -1; }
+.bin.open { flex-basis: 100%; }
 .bin.open .bin-face { cursor: zoom-out; }
 .bin-face:focus-visible { outline-offset: 6px; border-radius: 24px; }
 @media (min-width: 720px) {
@@ -302,7 +310,7 @@ html { scrollbar-color: var(--ink-soft) var(--cream); }
 .bin-close { min-height: 54px; padding: 0 20px; border: 2px solid rgb(22 74 144 / .25); border-radius: 999px; background: #fffaf0; font-weight: 800; color: var(--ink); cursor: pointer; }
 .bin-close:hover { border-color: var(--ink); }
 
-.made { margin-top: 64px; padding: 26px 22px; border-radius: var(--r-lg); background: var(--peach); }
+.made { margin-top: 64px; padding: 26px 22px; box-shadow: var(--lift); rotate: -.4deg; }
 .made h2 { font-size: 24px; }
 .made .perks { margin-top: 16px; }
 
@@ -330,3 +338,8 @@ html { scrollbar-color: var(--ink-soft) var(--cream); }
 /* the open bin names its current color on the photo, like the shop's posts */
 .bin-color { display: none; position: absolute; right: 12px; bottom: 16px; font-size: 20px; }
 .bin.open .bin-color { display: inline-block; }
+
+/* the sprinkles keep going down the page, sparser so the shelves stay calm (the header paints its own) */
+body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='420'%3E%3Cg stroke-linecap='round' stroke-width='8' opacity='.55'%3E%3Cpath d='M30 60l22-10' stroke='%23ee6f45'/%3E%3Cpath d='M300 40l8 22' stroke='%239fd8c5'/%3E%3Cpath d='M320 250l-20 12' stroke='%23f5b52e'/%3E%3Cpath d='M150 380l24-4' stroke='%23f4b2be'/%3E%3C/g%3E%3C/svg%3E");
+}

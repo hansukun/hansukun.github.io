@@ -23,11 +23,11 @@
 
 | id | Name | Shelf | Price | Colors (swatch hex → image) | Size | Includes | Description |
 |---|---|---|---|---|---|---|---|
-| forest-house | Forest House slide set | Climb & slide | 13450 | Autumn Beige `#c9a27a` → forest-house-beige; Spring Green `#b6c46a` → forest-house-green | L 1860 × W 2050 × H 1640 mm | 2 slides; Basketball hoop; Telescope toy; Climbing ladder; Hide-and-seek nook / storage; Two-way ladder orientation | Two slides, two towers and a hoop in the middle. |
+| forest-house | Forest House slide set | Climb & slide | 13450 | Autumn Beige `#c9a27a` → forest-house-beige; Spring Green `#b6c46a` → forest-house-green | L 1860 × W 2050 × H 1640 mm | 2 slides; Basketball hoop; Telescope toy; Climbing ladder; Hide-and-seek nook / storage; Two-way ladder orientation | Two slides side by side, with a basketball hoop in the middle. |
 | forest-nest | Forest Nest slide set | Climb & slide | 12450 | Autumn Beige `#c9a27a` → forest-nest-beige; Spring Green `#b6c46a` → forest-nest-green | L 1860 × W 2050 × H 1640 mm | 1 slide + 1 climbing frame; Basketball hoop; Telescope toy; Climbing ladder; Hide-and-seek nook / storage; Two-way ladder and slide orientation | One slide plus a climbing frame to scramble up. |
 | tree | Rotating Tree bookshelf | Read & store | 3950 | White & Grey `#e4e1da` → tree-white; Classic Green `#6f8f5a` → tree-green | Ø 570 × H 1216 mm | 360° rotation; 6 storage panels; 6 side book panels | A Christmas tree of books that turns all the way round. |
 | whale | Whale 2-in-1 bookshelf & storage | Read & store | 4600 | Grey & White `#cdd1d4` → whale | L 670 × W 290 × H 980 mm | 4-layer bookshelf; 4 removable bins | Covers forward on top, toys in the bins below. |
-| bubble | Bubble 2-in-1 bookshelf & storage | Read & store | 2600 | Beige `#e2cbad` → bubble | L 660 × W 350 × H 810 mm | 2-layer bookshelf; 4 removable bins | Low enough for little arms to reach every shelf. |
+| bubble | Bubble 2-in-1 bookshelf & storage | Read & store | 2600 | Beige `#e2cbad` → bubble | L 660 × W 350 × H 810 mm | 2-layer bookshelf; 4 removable bins | Books face out on two shelves, toys go in four bins below. |
 | shop | Shop play storage | Play pretend | 3200 | White & Grey `#d8d9da` → shop-grey; Beige `#e2cbad` → shop-beige | L 800 × W 330 × H 1000 mm | Shop counter with awning; 6 removable bins | A little shop front that tidies the toys away. |
 | serene | Serene Playhouse | Play pretend | 3950 | Grey & White `#cdd1d4` → serene | L 1080 × W 800 × H 1100 mm | Arched door with curtains; Side play counter | A whole house with a curtained door and a side counter. |
 

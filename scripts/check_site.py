@@ -474,7 +474,7 @@ HH_TOKENS = {
 HH_PRODUCTS = [
     ("forest-house", "Forest House slide set", 13450, ["Autumn Beige", "Spring Green"], "L 1860 × W 2050 × H 1640 mm",
      ["2 slides", "Basketball hoop", "Telescope toy", "Climbing ladder", "Hide-and-seek nook / storage", "Two-way ladder orientation"],
-     "Two slides, two towers and a hoop in the middle."),
+     "Two slides side by side, with a basketball hoop in the middle."),
     ("forest-nest", "Forest Nest slide set", 12450, ["Autumn Beige", "Spring Green"], "L 1860 × W 2050 × H 1640 mm",
      ["1 slide + 1 climbing frame", "Basketball hoop", "Telescope toy", "Climbing ladder", "Hide-and-seek nook / storage", "Two-way ladder and slide orientation"],
      "One slide plus a climbing frame to scramble up."),
@@ -483,7 +483,7 @@ HH_PRODUCTS = [
     ("whale", "Whale 2-in-1 bookshelf & storage", 4600, ["Grey & White"], "L 670 × W 290 × H 980 mm",
      ["4-layer bookshelf", "4 removable bins"], "Covers forward on top, toys in the bins below."),
     ("bubble", "Bubble 2-in-1 bookshelf & storage", 2600, ["Beige"], "L 660 × W 350 × H 810 mm",
-     ["2-layer bookshelf", "4 removable bins"], "Low enough for little arms to reach every shelf."),
+     ["2-layer bookshelf", "4 removable bins"], "Books face out on two shelves, toys go in four bins below."),
     ("shop", "Shop play storage", 3200, ["White & Grey", "Beige"], "L 800 × W 330 × H 1000 mm",
      ["Shop counter with awning", "6 removable bins"], "A little shop front that tidies the toys away."),
     ("serene", "Serene Playhouse", 3950, ["Grey & White"], "L 1080 × W 800 × H 1100 mm",

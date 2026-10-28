@@ -16,11 +16,11 @@ The visitor is a parent who tapped through from Instagram on a phone. They want 
 - One page that shows all 7 products from the shop's Instagram, grouped onto three shelves: **Climb & slide** (Forest House slide set, Forest Nest slide set), **Read & store** (Rotating Tree bookshelf, Whale 2-in-1, Bubble 2-in-1), **Play pretend** (Shop play storage, Serene Playhouse).
 - For each product: real photos, every color option, size, what's included, price in pesos, and the five shared features (easy installation, rounded corners, stable support, odor-free HDPE, safe and durable). PRODUCT.md is the source of truth for names, colors, sizes, includes and prices, and the page copies it word for word (the order note uses those exact names). It was reconciled with the mockup on 2026-10-29.
 - Each product also gets a one-line description. *My call: these are written by me from the captions and photos, not supplied by the shop; the user should check them.* They describe, they don't claim:
-  - Forest House slide set: "Two slides, two towers and a hoop in the middle."
+  - Forest House slide set: "Two slides side by side, with a basketball hoop in the middle."
   - Forest Nest slide set: "One slide plus a climbing frame to scramble up."
   - Rotating Tree bookshelf: "A Christmas tree of books that turns all the way round."
   - Whale 2-in-1: "Covers forward on top, toys in the bins below."
-  - Bubble 2-in-1: "Low enough for little arms to reach every shelf."
+  - Bubble 2-in-1: "Books face out on two shelves, toys go in four bins below."
   - Shop play storage: "A little shop front that tidies the toys away."
   - Serene Playhouse: "A whole house with a curtained door and a side counter."
 - One ordering path: **Message to order** copies a ready-made note naming the product, color and price, then opens the Instagram DM (`https://ig.me/m/happyhaustoys`). Instagram links can't pre-fill a message, which is why the note is copied.
