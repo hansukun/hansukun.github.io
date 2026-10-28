@@ -350,6 +350,7 @@ PORTFOLIO_COPY = [
     "React",
     "Vue",
     "React Native",
+    "Client work",
     "Things I've shipped",
     "Coming soon to Google Play",
     "More coming soon",
@@ -365,7 +366,7 @@ def check_portfolio(name: str) -> list[str]:
     if page is None:
         return []
     out = []
-    for i in ("skills", "apps", "contact"):
+    for i in ("skills", "works", "apps", "contact"):
         if i not in page.ids:
             out.append(f"{name}: missing id={i}")
     for t in PORTFOLIO_COPY:
@@ -394,7 +395,7 @@ def check_portfolio(name: str) -> list[str]:
 
 # Expected counts of each game attribute per page; attributes are matched in markup only.
 GAME_MARKUP: dict[str, dict[str, int]] = {
-    PORTFOLIO: {"data-type": 1, "data-reveal": 3, "data-spy": 3, "data-walker": 1},
+    PORTFOLIO: {"data-type": 1, "data-reveal": 3, "data-spy": 4, "data-walker": 1},
     "settled/index.html": {"data-type": 1, "data-reveal": 16, "data-spy": 2, "data-walker": 1},
     "settled/privacy.html": {"data-type": 0, "data-reveal": 0, "data-spy": 0, "data-walker": 1},
 }
