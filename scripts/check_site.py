@@ -390,6 +390,14 @@ def check_portfolio(name: str) -> list[str]:
         out.append(f"{name}: old 'Built with plain HTML & CSS' footer note is still there")
     if page.text.count("7+ yrs") != 3:
         out.append(f"{name}: each of the three skill cards needs an 'Exp … 7+ yrs' row")
+    if "works/happy-haus-toys/" not in page.hrefs:
+        out.append(f"{name}: Works card must link to works/happy-haus-toys/")
+    if "assets/works/happy-haus-toys.png" not in page.srcs:
+        out.append(f"{name}: Works card needs assets/works/happy-haus-toys.png")
+    if "Happy Haus Toys" not in page.text:
+        out.append(f"{name}: Works card title 'Happy Haus Toys' missing")
+    if 'class="work-empty"' in page.html:
+        out.append(f"{name}: the empty Works placeholder should be gone")
     return out
 
 
@@ -459,6 +467,21 @@ def check_hh_assets(_: str) -> list[str]:
         out.append(f"missing {HH_DIR}/assets/icon.png")
     elif png_size(icon) != (180, 180):
         out.append(f"{HH_DIR}/assets/icon.png is {png_size(icon)}, expected (180, 180)")
+    shot = ROOT / "assets" / "works" / "happy-haus-toys.png"
+    if not shot.exists():
+        out.append("missing assets/works/happy-haus-toys.png")
+    elif png_size(shot) != (1280, 800):
+        out.append(f"assets/works/happy-haus-toys.png is {png_size(shot)}, expected (1280, 800)")
+    og = ROOT / HH_DIR / "assets" / "og.jpg"
+    if not og.exists():
+        out.append(f"missing {HH_DIR}/assets/og.jpg")
+    else:
+        from PIL import Image
+        with Image.open(og) as im:
+            if im.size != (1200, 630):
+                out.append(f"{HH_DIR}/assets/og.jpg is {im.size}, expected (1200, 630)")
+    if (ROOT / HH_DIR / "mockups").exists():
+        out.append(f"{HH_DIR}/mockups/ should be deleted (throwaway decision mockups)")
     return out
 
 
