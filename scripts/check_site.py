@@ -517,7 +517,7 @@ HH_PERKS = ["Easy installation", "Rounded corners", "Stable support", "Odor-free
 HH_COPY = [
     "On-hand playhouses, slides & shelves for your little ones.",
     "Pick a piece off the shelf, choose its color, and message us on Instagram to order.",
-    "Message to order", "Back to the shelf", "Found the one?", "We reply on Instagram.", "Message us",
+    "Message to order", "Back to the shelf", "We'll copy your order note, so you can paste it in the chat.", "Found the one?", "We reply on Instagram.", "Message us",
     "Every piece is", "On-hand items, ordered by message.", "@happyhaustoys on Instagram",
 ]
 HH_FORBIDDEN = r"deliver|shipping|cash on delivery|\bCOD\b|warranty|in stock|\breview|testimonial|\brated\b"

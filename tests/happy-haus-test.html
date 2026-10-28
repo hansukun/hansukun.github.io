@@ -116,6 +116,45 @@
       check("back to the shelf refocuses",
         !whale.classList.contains("open") && document.activeElement === $(".bin-face", whale));
 
+      // the toast waits while the parent is away in Instagram, then times out once they're back
+      let away = true;
+      Object.defineProperty(document, "hidden", { configurable: true, get: () => away });
+      H.toastMs = 30;
+      $("[data-order]", nest).click();
+      await tick(); await tick();
+      await new Promise((r) => setTimeout(r, 90));
+      const keptWhileAway = $(".toast").classList.contains("show");
+      away = false;
+      document.dispatchEvent(new Event("visibilitychange"));
+      const stillShownOnReturn = $(".toast").classList.contains("show");
+      await new Promise((r) => setTimeout(r, 90));
+      check("toast waits until the parent is back", keptWhileAway && stillShownOnReturn && !$(".toast").classList.contains("show"),
+        `away:${keptWhileAway} return:${stillShownOnReturn}`);
+      delete document.hidden;
+
+      // the real page at phone width, with and without JavaScript
+      const frame = (sandbox) => new Promise((resolve) => {
+        const f = document.createElement("iframe");
+        f.style.cssText = "width:320px;height:900px;border:0";
+        if (sandbox !== null) f.setAttribute("sandbox", sandbox);
+        f.onload = () => setTimeout(() => resolve(f), 600);
+        f.src = "../works/happy-haus-toys/";
+        document.body.append(f);
+      });
+      const noJs = await frame("allow-same-origin");
+      const nd = noJs.contentDocument;
+      check("without JS the page fits 320px", nd.documentElement.scrollWidth <= 320, String(nd.documentElement.scrollWidth));
+      check("without JS every spec sits inside its bin",
+        [...nd.querySelectorAll(".bin")].every((bin) => {
+          const b = bin.getBoundingClientRect();
+          return [...bin.querySelectorAll(".specs dd, .order")].every((el) => el.getBoundingClientRect().right <= b.right + 1);
+        }));
+      const withJs = await frame(null);
+      const wd = withJs.contentDocument;
+      check("with JS the page fits 320px", wd.documentElement.scrollWidth <= 320, String(wd.documentElement.scrollWidth));
+      check("the order hint is next to the button", /paste it in the chat/i.test(wd.querySelector(".bin-detail").textContent));
+      noJs.remove(); withJs.remove();
+
       const failed = results.filter((r) => r.startsWith("FAIL")).length;
       $("#result").textContent = results.join("\n") + "\n" + (failed ? failed + " FAILED" : `PASS ${results.length}/${results.length}`);
     })().catch((e) => { $("#result").textContent = "ERROR " + e.message; });

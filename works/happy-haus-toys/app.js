@@ -13,6 +13,7 @@
 
   let toastEl = null;
   let toastTimer;
+  let toastPending = false; // shown while the parent was away in Instagram: start the clock when they're back
   // parts: strings, or { b: text } for bold runs; built as nodes so product names are never parsed as HTML
   function toast(parts) {
     if (!toastEl) {
@@ -29,8 +30,19 @@
     }));
     toastEl.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 4200);
+    toastPending = document.hidden;
+    if (!toastPending) startToastClock();
   }
+
+  function startToastClock() {
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), api.toastMs);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden || !toastPending) return;
+    toastPending = false;
+    startToastClock();
+  });
 
   function setColor(bin, i) {
     const swatch = bin.querySelector(`[data-swatch="${i}"]`);
@@ -79,6 +91,7 @@
   }
 
   function init(root = document) {
+    document.documentElement.classList.add('js');
     root.querySelectorAll('.bin-detail').forEach((d) => { d.hidden = true; });
     root.querySelectorAll('.bin-face').forEach((f) => f.setAttribute('aria-expanded', 'false'));
 
@@ -100,7 +113,8 @@
     });
   }
 
-  window.HappyHaus = { peso, orderNote, setColor, openBin, closeBin, init };
+  const api = { peso, orderNote, setColor, openBin, closeBin, init, toastMs: 4200 };
+  window.HappyHaus = api;
 
   if (window.HAPPY_HAUS_NO_AUTOINIT !== true) {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => init());
